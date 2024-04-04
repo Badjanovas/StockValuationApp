@@ -15,6 +15,7 @@ public class UserMappingService {
         return User.builder()
                 .userName(requestDTO.getUserName())
                 .password(requestDTO.getPassword())
+                .email(requestDTO.getEmail())
                 .build();
     }
 
@@ -23,7 +24,9 @@ public class UserMappingService {
         for (User user : allUsers) {
             UserResponseDTO dto = new UserResponseDTO();
             dto.setId(user.getId());
+            dto.setCreationDate(user.getCreationDate());
             dto.setUserName(user.getUserName());
+            dto.setEmail(user.getEmail());
             mappedUsers.add(dto);
         }
         return mappedUsers;

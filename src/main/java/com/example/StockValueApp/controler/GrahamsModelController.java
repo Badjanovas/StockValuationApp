@@ -1,7 +1,7 @@
 package com.example.StockValueApp.controler;
 
-import com.example.StockValueApp.model.GrahamsModule;
-import com.example.StockValueApp.service.GrahamsValuationService;
+import com.example.StockValueApp.dto.GrahamsRequestDTO;
+import com.example.StockValueApp.service.GrahamsModelService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/grahams")
 @Slf4j
 @RequiredArgsConstructor
-public class GrahamsValuationController {
+public class GrahamsModelController {
 
-    private final GrahamsValuationService service;
+    private final GrahamsModelService service;
     @GetMapping("/")
     public ResponseEntity<?> findAll(){
         return ResponseEntity.status(HttpStatus.OK).body(service.getAllGrahamsValuations());
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> add(@RequestBody final GrahamsModule grahamsModule){
-        return ResponseEntity.status(HttpStatus.OK).body(service.saveGrahamsValuation(grahamsModule));
+    public ResponseEntity<?> add(@RequestBody final GrahamsRequestDTO grahamsRequestDTO){
+        return ResponseEntity.status(HttpStatus.OK).body(service.saveGrahamsValuation(grahamsRequestDTO));
     }
 }
