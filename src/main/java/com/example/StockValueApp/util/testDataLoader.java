@@ -35,7 +35,7 @@ public class testDataLoader implements CommandLineRunner {
         userRepository.save(user2);
         userRepository.save(user3);
         userRepository.save(user4);
-        grahamsModelService.saveGrahamsValuation(userInput);
+        grahamsModelService.addGrahamsValuation(userInput);
         System.out.println(calculation1.getIntrinsicValue() + " This is the value of a company");
 
     }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 @Slf4j
 public class UserExceptionHandler {
+
     @ExceptionHandler(MandatoryFieldsMissingException.class)
     public ResponseEntity<Object> handleMandatoryFieldException(MandatoryFieldsMissingException e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -31,5 +32,10 @@ public class UserExceptionHandler {
     @ExceptionHandler(EmailAlreadyExist.class)
     public ResponseEntity<Object> emailAlreadyExist(EmailAlreadyExist e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(NotValidIdException.class)
+    public ResponseEntity<Object> handleNotValidIdException(NotValidIdException e){
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

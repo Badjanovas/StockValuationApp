@@ -2,7 +2,6 @@ package com.example.StockValueApp.controler;
 
 import com.example.StockValueApp.dto.UserRequestDTO;
 import com.example.StockValueApp.exception.*;
-import com.example.StockValueApp.model.User;
 import com.example.StockValueApp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +29,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable final Long userId) throws NotValidIdException, NoUsersFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.deleteUser(userId));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.deleteUserById(userId));
     }
 
     @PutMapping("/update/{userName}")

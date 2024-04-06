@@ -46,11 +46,11 @@ public class UserService {
         return userMappingService.mapToResponse(userRepository.findAll());
     }
 
-    public List<UserResponseDTO> deleteUser(final Long id) throws NotValidIdException, NoUsersFoundException {
+    public List<UserResponseDTO> deleteUserById(final Long id) throws NotValidIdException, NoUsersFoundException {
         globalExceptionValidator.validateId(id);
         userRequestValidator.validateUserById(id);
         userRepository.deleteById(id);
-        log.info("User with id number " + id + " was deleted fromDB successfully.");
+        log.info("User with id number " + id + " was deleted from DB successfully.");
 
         return userMappingService.mapToResponse(userRepository.findAll());
     }
