@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,7 +23,7 @@ public class DcfModel {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String companyName;
 
     @Column(nullable = false)
     private String ticker;
@@ -47,18 +48,19 @@ public class DcfModel {
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalDateTime creationDate;
+    private LocalDate creationDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;
 
-    public DcfModel(String ticker, Double sumOfFCF, Double totalDebt, Double equityValue, Double sharesOutstanding, User user) {
+    public DcfModel(String companyName, String ticker, Double sumOfFCF, Double cashAndCashEquivalents, Double totalDebt, Double sharesOutstanding, User user) {
+        this.companyName = companyName;
         this.ticker = ticker;
         this.sumOfFCF = sumOfFCF;
+        this.cashAndCashEquivalents = cashAndCashEquivalents;
         this.totalDebt = totalDebt;
-        this.equityValue = equityValue;
         this.sharesOutstanding = sharesOutstanding;
         this.user = user;
     }

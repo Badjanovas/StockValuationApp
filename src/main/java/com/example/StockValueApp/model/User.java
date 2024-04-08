@@ -42,12 +42,15 @@ public class User {
     @JsonManagedReference
     private List<GrahamsModel> grahamsModels;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<DcfModel> dcfModel;
+
     public User(String userName, String password, String email) {
         this.userName = userName;
         this.password = password;
         this.email = email;
         this.grahamsModels = new ArrayList<>();
+        this.dcfModel = new ArrayList<>();
     }
-
-
 }

@@ -1,9 +1,14 @@
 package com.example.StockValueApp.util;
+import com.example.StockValueApp.dto.DcfModelRequestDTO;
 import com.example.StockValueApp.dto.GrahamsRequestDTO;
+import com.example.StockValueApp.model.DcfModel;
 import com.example.StockValueApp.model.GrahamsModel;
 import com.example.StockValueApp.model.User;
+import com.example.StockValueApp.repository.DcfModelRepository;
 import com.example.StockValueApp.repository.UserRepository;
+import com.example.StockValueApp.service.DcfModelService;
 import com.example.StockValueApp.service.GrahamsModelService;
+import com.example.StockValueApp.service.mappingService.DcfModelMappingService;
 import com.example.StockValueApp.service.mappingService.GrahamsModelMappingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +24,10 @@ public class testDataLoader implements CommandLineRunner {
     private final UserRepository userRepository;
     private final GrahamsModelMappingService grahamsModelMappingService;
 
+    private final DcfModelService dcfModelService;
+    private final DcfModelMappingService dcfModelMappingService;
+    private final DcfModelRepository dcfModelRepository;
+
     @Override
     public void run(String... args) throws Exception {
         User user1 = new User("Andrius", "password", "lalala@gmail.com");
@@ -31,12 +40,22 @@ public class testDataLoader implements CommandLineRunner {
         calculation1.setUser(user1);
 
 
+
+
+        DcfModelRequestDTO userInput2 = new DcfModelRequestDTO("PayPal", "pypl", 81817.0, 21540.0, 61115.0, 1070.0);
+        DcfModel calculation2 = dcfModelMappingService.mapToEntity(userInput2);
+        user1.getDcfModel().add(calculation2);
+        calculation2.setUser(user1);
+
+
         userRepository.save(user1);
         userRepository.save(user2);
         userRepository.save(user3);
         userRepository.save(user4);
+        dcfModelRepository.save(calculation2);
         grahamsModelService.addGrahamsValuation(userInput);
-        System.out.println(calculation1.getIntrinsicValue() + " This is the value of a company");
+        System.out.println(calculation1.getIntrinsicValue() + " This is the value of alibaba ");
 
+        System.out.println(calculation2.getIntrinsicValue() + " This is the value of paypal");
     }
 }

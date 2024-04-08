@@ -14,6 +14,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,21 +37,46 @@ public class GrahamsModelService {
         return grahamsModelMappingService.mapToResponse(grahamsRepository.findAll());
     }
 
-    public List<GrahamsModel> getAllGrahamsValuations(){
-        List<GrahamsModel> grahamsValuations = new ArrayList<>();
+    // sita gal geriau daryti void nes gali buti daug skaiciavimu tad visada grazinant visus po istrinimo bus apkrauta sistema??
+    public List<GrahamsResponseDTO> deleteGrahamsValuationById(final Long id) throws NotValidIdException, NoGrahamsModelFoundException {
+        globalExceptionValidator.validateId(id);
+        grahamsModelRequestValidator.validateGrahamsModelById(id);
+        grahamsRepository.deleteById(id);
+        log.info("Grahams valuation  with id number " + id + " was deleted from DB successfully.");
+
+        return grahamsModelMappingService.mapToResponse(grahamsRepository.findAll());
+    }
+
+    public List<GrahamsModel> getAllGrahamsValuations() throws NoGrahamsModelFoundException {
+        final List<GrahamsModel> grahamsValuations = new ArrayList<>();
         grahamsValuations.addAll(grahamsRepository.findAll());
+        grahamsModelRequestValidator.validateGrahamsModelList(grahamsValuations);
+
         log.info(grahamsValuations.size() + " Grahams valuations were found in DB.");
         return grahamsValuations;
     }
 
-    // sita gal geriau daryti void nes gali buti daug skaiciavimu tad visada grazinant visus po istrinimo bus apkrauta sistema??
-    public List<GrahamsResponseDTO> deleteGrahamsModelById(final Long id) throws NotValidIdException, NoGrahamsModelFoundException {
-        globalExceptionValidator.validateId(id);
-        grahamsModelRequestValidator.validateGrahamsModelById(id);
-        grahamsRepository.deleteById(id);
-        log.info("UGrahams valuation  with id number " + id + " was deleted from DB successfully.");
+    public List<GrahamsResponseDTO> getGrahamsValuationsByTicker(final String ticker) throws NoGrahamsModelFoundException {
+       final List<GrahamsModel> companiesValuations = grahamsRepository.findByTickerIgnoreCase(ticker);
+       grahamsModelRequestValidator.validateGrahamsModelList(companiesValuations, ticker);
 
-        return grahamsModelMappingService.mapToResponse(grahamsRepository.findAll());
+       log.info("Found " + companiesValuations.size() + " Grahams company valuations with ticker: " + ticker);
+       return grahamsModelMappingService.mapToResponse(companiesValuations);
+    }
+
+    public List<GrahamsResponseDTO> getGrahamsValuationsByCompanyName(final String companyName) throws NoGrahamsModelFoundException {
+        final List<GrahamsModel> companiesValuations = grahamsRepository.findByNameIgnoreCase(companyName);
+        grahamsModelRequestValidator.validateGrahamsModelList(companiesValuations, companyName);
+
+        log.info("Found " + companiesValuations.size() + " Grahams company valuations with ticker: " + companyName);
+        return grahamsModelMappingService.mapToResponse(companiesValuations);
+    }
+
+    public List<GrahamsResponseDTO> getGrahamsValuationsByDate(final LocalDate date) throws NoGrahamsModelFoundException {
+        final List<GrahamsModel> valuationsByDate = grahamsRepository.findByCreationDate(date);
+        grahamsModelRequestValidator.validateGrahamsModelList(valuationsByDate, date);
+
+        return grahamsModelMappingService.mapToResponse(valuationsByDate);
     }
 
 

@@ -24,28 +24,28 @@ public class GrahamsModelMappingService {
                 .build();
     }
 
-    public List<GrahamsResponseDTO> mapToResponse(List<GrahamsModel> grahamModelCalculations){
-        List<GrahamsResponseDTO> mappedGrahamCalculations = new ArrayList<>();
-        for (GrahamsModel calculation : grahamModelCalculations) {
+    public List<GrahamsResponseDTO> mapToResponse(List<GrahamsModel> grahamModelValuations){
+        List<GrahamsResponseDTO> mappedGrahamValuations = new ArrayList<>();
+        for (GrahamsModel grahamsValuation : grahamModelValuations) {
             GrahamsResponseDTO dto = new GrahamsResponseDTO();
-            dto.setCompanyName(calculation.getName());
-            dto.setCompanyTicker(calculation.getTicker());
-            dto.setEps(calculation.getEps());
-            dto.setGrowthRate(calculation.getGrowthRate());
-            dto.setCurrentYieldOfBonds(calculation.getCurrentYieldOfBonds());
-            dto.setIntrinsicValue(calculation.getIntrinsicValue());
-            dto.setCreationDate(calculation.getCreationDate());
-            mappedGrahamCalculations.add(dto);
+            dto.setCompanyName(grahamsValuation.getName());
+            dto.setCompanyTicker(grahamsValuation.getTicker());
+            dto.setEps(grahamsValuation.getEps());
+            dto.setGrowthRate(grahamsValuation.getGrowthRate());
+            dto.setCurrentYieldOfBonds(grahamsValuation.getCurrentYieldOfBonds());
+            dto.setIntrinsicValue(grahamsValuation.getIntrinsicValue());
+            dto.setCreationDate(grahamsValuation.getCreationDate());
+            mappedGrahamValuations.add(dto);
         }
-        return mappedGrahamCalculations;
+        return mappedGrahamValuations;
     }
 
     //Grahams model formula
-    private Double calculateGrahamsValuation(final GrahamsRequestDTO model){
-       return roundToTwoDecimal((model.getEps() *
+    private Double calculateGrahamsValuation(final GrahamsRequestDTO requestDTO){
+       return roundToTwoDecimal((requestDTO.getEps() *
                 (GrahamsModel.BASE_PE +
-                        model.getGrowthRate()) *
-                GrahamsModel.AVERAGE_YIELD_AAA_BONDS) / model.getCurrentYieldOfBonds());
+                        requestDTO.getGrowthRate()) *
+                GrahamsModel.AVERAGE_YIELD_AAA_BONDS) / requestDTO.getCurrentYieldOfBonds());
     }
 
     private Double roundToTwoDecimal(final Double numberToRound){

@@ -33,9 +33,4 @@ public class UserExceptionHandler {
     public ResponseEntity<Object> emailAlreadyExist(EmailAlreadyExist e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
-
-    @ExceptionHandler(NotValidIdException.class)
-    public ResponseEntity<Object> handleNotValidIdException(NotValidIdException e){
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
 }

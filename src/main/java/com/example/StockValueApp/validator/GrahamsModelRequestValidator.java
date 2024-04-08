@@ -3,10 +3,15 @@ package com.example.StockValueApp.validator;
 import com.example.StockValueApp.dto.GrahamsRequestDTO;
 import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
 import com.example.StockValueApp.exception.NoGrahamsModelFoundException;
+import com.example.StockValueApp.model.GrahamsModel;
 import com.example.StockValueApp.repository.GrahamsModelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -47,6 +52,27 @@ public class GrahamsModelRequestValidator {
         if (!grahamsModelRepository.existsById(id)){
             log.error("Grahams valuation with id number " + id + " not found.");
             throw new NoGrahamsModelFoundException("Grahams valuation with id number " + id + " not found.");
+        }
+    }
+
+    public void validateGrahamsModelList(final List<GrahamsModel> valuationList, String companyNameOrTicker) throws NoGrahamsModelFoundException {
+        if (valuationList.isEmpty()){
+            log.error("No Graham valuations found for: " + companyNameOrTicker);
+            throw new NoGrahamsModelFoundException("No Graham valuations found for: " + companyNameOrTicker);
+        }
+    }
+
+    public void validateGrahamsModelList(final List<GrahamsModel> valuationList) throws NoGrahamsModelFoundException {
+        if (valuationList.isEmpty()){
+            log.error("No Graham valuations.");
+            throw new NoGrahamsModelFoundException("No Graham valuations.");
+        }
+    }
+
+    public void validateGrahamsModelList(final List<GrahamsModel> valuationList, LocalDate date) throws NoGrahamsModelFoundException {
+        if (valuationList.isEmpty()){
+            log.error("There are no valuations made in " + date);
+            throw new NoGrahamsModelFoundException("There are no valuations made in " + date);
         }
     }
 

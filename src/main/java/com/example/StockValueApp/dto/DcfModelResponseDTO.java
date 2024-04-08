@@ -7,19 +7,19 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GrahamsResponseDTO {
+public class DcfModelResponseDTO {
 
     private String companyName;
-    private String companyTicker;
-    //Earnings per share
-    private Double eps;
-    private Double growthRate;
-    private Double currentYieldOfBonds;
+    private String ticker;
+    private Double sumOfFCF;
+    private Double cashAndCashEquivalents;
+    private Double totalDebt;
+    private Double equityValue;
+    private Double sharesOutstanding;
     private Double intrinsicValue;
     private LocalDate creationDate;
 
