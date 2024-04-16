@@ -11,10 +11,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 public class UserExceptionHandler {
 
-    @ExceptionHandler(MandatoryFieldsMissingException.class)
-    public ResponseEntity<Object> handleMandatoryFieldException(MandatoryFieldsMissingException e){
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
     @ExceptionHandler(NoUsersFoundException.class)
     public ResponseEntity<Object> handleNoUsersFoundException(NoUsersFoundException e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

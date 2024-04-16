@@ -1,5 +1,6 @@
 package com.example.StockValueApp.handler;
 
+import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
 import com.example.StockValueApp.exception.NotValidIdException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotValidIdException.class)
     public ResponseEntity<Object> handleNotValidIdException(NotValidIdException e){
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MandatoryFieldsMissingException.class)
+    public ResponseEntity<Object> handleMandatoryFieldException(MandatoryFieldsMissingException e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 

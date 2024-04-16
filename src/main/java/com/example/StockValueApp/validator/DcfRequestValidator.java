@@ -26,11 +26,11 @@ public class DcfRequestValidator {
             log.error("Request was empty.");
             throw new MandatoryFieldsMissingException("Request was empty.");
         } else if (dcfModelRequestDTO.getCompanyName() == null) {
+            log.error("Mandatory company name field is missing.");
+            throw new MandatoryFieldsMissingException("Mandatory company name field is missing.");
+        } else if (dcfModelRequestDTO.getCompanyName().isBlank()) {
             log.error("Mandatory company name field is empty.");
             throw new MandatoryFieldsMissingException("Mandatory company name field is empty.");
-        } else if (dcfModelRequestDTO.getCompanyName().isBlank()) {
-            log.error("Mandatory company ticker field is missing.");
-            throw new MandatoryFieldsMissingException("Mandatory company ticker field is missing.");
         } else if (dcfModelRequestDTO.getTicker() == null) {
             log.error("Mandatory company ticker field is missing.");
             throw new MandatoryFieldsMissingException("Mandatory company ticker field is missing.");

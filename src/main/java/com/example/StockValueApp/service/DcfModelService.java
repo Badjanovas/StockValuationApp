@@ -2,13 +2,11 @@ package com.example.StockValueApp.service;
 
 import com.example.StockValueApp.dto.DcfModelRequestDTO;
 import com.example.StockValueApp.dto.DcfModelResponseDTO;
-import com.example.StockValueApp.dto.GrahamsResponseDTO;
 import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
 import com.example.StockValueApp.exception.NoDcfValuationsFoundException;
 import com.example.StockValueApp.exception.NoGrahamsModelFoundException;
 import com.example.StockValueApp.exception.NotValidIdException;
 import com.example.StockValueApp.model.DcfModel;
-import com.example.StockValueApp.model.GrahamsModel;
 import com.example.StockValueApp.repository.DcfModelRepository;
 import com.example.StockValueApp.service.mappingService.DcfModelMappingService;
 import com.example.StockValueApp.validator.DcfRequestValidator;
@@ -32,8 +30,7 @@ public class DcfModelService {
     private final DcfRequestValidator dcfRequestValidator;
 
     public List<DcfModel> getAllDcfValuations() throws NoDcfValuationsFoundException {
-        final List<DcfModel> dcfValuations = new ArrayList<>();
-        dcfValuations.addAll(dcfModelRepository.findAll());
+        final List<DcfModel> dcfValuations = dcfModelRepository.findAll();
         dcfRequestValidator.validateDcfModelList(dcfValuations);
 
         log.info(dcfValuations.size() + " Grahams valuations were found in DB.");

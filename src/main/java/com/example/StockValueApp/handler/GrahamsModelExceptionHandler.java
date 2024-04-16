@@ -14,11 +14,6 @@ import java.time.format.DateTimeParseException;
 @Slf4j
 public class GrahamsModelExceptionHandler {
 
-    @ExceptionHandler(MandatoryFieldsMissingException.class)
-    public ResponseEntity<Object> handleMandatoryFieldException(MandatoryFieldsMissingException e){
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(NoGrahamsModelFoundException.class)
     public ResponseEntity<Object> handleNoGrahamsModelFoundException(NoGrahamsModelFoundException e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
