@@ -3,12 +3,15 @@ package com.example.StockValueApp.validator;
 import com.example.StockValueApp.dto.DcfModelRequestDTO;
 import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
 import com.example.StockValueApp.exception.NoDcfValuationsFoundException;
+import com.example.StockValueApp.exception.NoGrahamsModelFoundException;
 import com.example.StockValueApp.model.DcfModel;
+import com.example.StockValueApp.model.GrahamsModel;
 import com.example.StockValueApp.repository.DcfModelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -53,6 +56,27 @@ public class DcfRequestValidator {
         if (dcfValuations.isEmpty()){
             log.error("No discounted cash flow valuations found.");
             throw new NoDcfValuationsFoundException("No discounted cash flow valuations found.");
+        }
+    }
+
+    public void validateDcfModelList(List<DcfModel> dcfValuations, String tickerOrName) throws NoDcfValuationsFoundException {
+        if (dcfValuations.isEmpty()){
+            log.error("No discounted cash flow valuations found for: " + tickerOrName + ".");
+            throw new NoDcfValuationsFoundException("No discounted cash flow valuations found for: " + tickerOrName + ".");
+        }
+    }
+
+    public void validateDcfModelList(final List<DcfModel> valuationList, LocalDate date) throws NoGrahamsModelFoundException {
+        if (valuationList.isEmpty()){
+            log.error("There are no valuations made in " + date);
+            throw new NoGrahamsModelFoundException("There are no valuations made in " + date);
+        }
+    }
+
+    public void validateDcfModelById(final Long id) throws NoDcfValuationsFoundException {
+        if (!dcfModelRepository.existsById(id)){
+            log.error("Discounted cash flow valuation with id number " + id + " not found.");
+            throw new NoDcfValuationsFoundException("Discounted cash flow valuation with id number " + id + " not found.");
         }
     }
 

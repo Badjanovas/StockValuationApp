@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -22,39 +22,42 @@ public class DividendDiscountModel {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String companyName;
 
     @Column(nullable = false)
     private String ticker;
+    
+    @Column(nullable = false)
+    private Double currentYearsDiv;
 
     @Column(nullable = false)
-    private Double valueOfNexYearsDiv;
+    private Double valueOfNextYearsDiv;
 
     @Column(nullable = false)
     //Weighted average cost of capital
     private Double wacc;
 
     @Column(nullable = false)
-    private Double growthRate;
+    private Double expectedGrowthRate;
 
     @Column(nullable = false)
     private Double intrinsicValue;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalDateTime creationDate;
+    private LocalDate creationDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;
 
-    public DividendDiscountModel(String name, String ticker, Double valueOfNexYearsDiv, Double wacc, Double growthRate, User user) {
-        this.name = name;
+    public DividendDiscountModel(String companyName, String ticker, Double valueOfNextYearsDiv, Double wacc, Double expectedGrowthRate, User user) {
+        this.companyName = companyName;
         this.ticker = ticker;
-        this.valueOfNexYearsDiv = valueOfNexYearsDiv;
+        this.valueOfNextYearsDiv = valueOfNextYearsDiv;
         this.wacc = wacc;
-        this.growthRate = growthRate;
+        this.expectedGrowthRate = expectedGrowthRate;
         this.user = user;
     }
 }

@@ -44,13 +44,18 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<DcfModel> dcfModel;
+    private List<DcfModel> dcfModels;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<DividendDiscountModel> dividendDiscountModels;
 
     public User(String userName, String password, String email) {
         this.userName = userName;
         this.password = password;
         this.email = email;
         this.grahamsModels = new ArrayList<>();
-        this.dcfModel = new ArrayList<>();
+        this.dcfModels = new ArrayList<>();
+        this.dividendDiscountModels = new ArrayList<>();
     }
 }

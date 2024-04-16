@@ -55,10 +55,10 @@ public class GrahamsModelRequestValidator {
         }
     }
 
-    public void validateGrahamsModelList(final List<GrahamsModel> valuationList, String companyNameOrTicker) throws NoGrahamsModelFoundException {
-        if (valuationList.isEmpty()){
-            log.error("No Graham valuations found for: " + companyNameOrTicker);
-            throw new NoGrahamsModelFoundException("No Graham valuations found for: " + companyNameOrTicker);
+    public void validateGrahamsModelList(final List<GrahamsModel> grahamsValuations, String companyNameOrTicker) throws NoGrahamsModelFoundException {
+        if (grahamsValuations.isEmpty()){
+            log.error("No Graham valuations found for: " + companyNameOrTicker + ".");
+            throw new NoGrahamsModelFoundException("No Graham valuations found for: " + companyNameOrTicker + ".");
         }
     }
 

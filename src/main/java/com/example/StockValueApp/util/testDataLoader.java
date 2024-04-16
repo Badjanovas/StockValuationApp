@@ -1,14 +1,18 @@
 package com.example.StockValueApp.util;
 import com.example.StockValueApp.dto.DcfModelRequestDTO;
+import com.example.StockValueApp.dto.DividendDiscountRequestDTO;
 import com.example.StockValueApp.dto.GrahamsRequestDTO;
 import com.example.StockValueApp.model.DcfModel;
+import com.example.StockValueApp.model.DividendDiscountModel;
 import com.example.StockValueApp.model.GrahamsModel;
 import com.example.StockValueApp.model.User;
 import com.example.StockValueApp.repository.DcfModelRepository;
+import com.example.StockValueApp.repository.DividendDiscountRepository;
 import com.example.StockValueApp.repository.UserRepository;
 import com.example.StockValueApp.service.DcfModelService;
 import com.example.StockValueApp.service.GrahamsModelService;
 import com.example.StockValueApp.service.mappingService.DcfModelMappingService;
+import com.example.StockValueApp.service.mappingService.DividendDiscountMappingService;
 import com.example.StockValueApp.service.mappingService.GrahamsModelMappingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +32,10 @@ public class testDataLoader implements CommandLineRunner {
     private final DcfModelMappingService dcfModelMappingService;
     private final DcfModelRepository dcfModelRepository;
 
+    private final DividendDiscountMappingService dividendDiscountMappingService;
+    private final DividendDiscountRepository dividendDiscountRepository;
+
+
     @Override
     public void run(String... args) throws Exception {
         User user1 = new User("Andrius", "password", "lalala@gmail.com");
@@ -44,8 +52,34 @@ public class testDataLoader implements CommandLineRunner {
 
         DcfModelRequestDTO userInput2 = new DcfModelRequestDTO("PayPal", "pypl", 81817.0, 21540.0, 61115.0, 1070.0);
         DcfModel calculation2 = dcfModelMappingService.mapToEntity(userInput2);
-        user1.getDcfModel().add(calculation2);
+        user1.getDcfModels().add(calculation2);
         calculation2.setUser(user1);
+
+        DcfModelRequestDTO userInput3 = new DcfModelRequestDTO("Alphabet", "goog", 91817.0, 31540.0, 71115.0, 1170.0);
+        DcfModel calculation3 = dcfModelMappingService.mapToEntity(userInput3);
+        user1.getDcfModels().add(calculation3);
+        calculation3.setUser(user1);
+
+        DcfModelRequestDTO userInput4 = new DcfModelRequestDTO("Microsoft", "msft", 65817.0, 11540.0, 51115.0, 1870.0);
+        DcfModel calculation4 = dcfModelMappingService.mapToEntity(userInput4);
+        user1.getDcfModels().add(calculation4);
+        calculation4.setUser(user1);
+
+        DividendDiscountRequestDTO userInput5 = new DividendDiscountRequestDTO("Starbuks", "sbux", 2.28, 8.11, 7.0);
+        DividendDiscountModel calculation5 = dividendDiscountMappingService.mapToEntity(userInput5);
+        user2.getDividendDiscountModels().add(calculation5);
+        calculation5.setUser(user2);
+
+        DividendDiscountRequestDTO userInput6 = new DividendDiscountRequestDTO("Starbuks", "sbux", 2.28, 8.11, 6.5);
+        DividendDiscountModel calculation6 = dividendDiscountMappingService.mapToEntity(userInput6);
+        user2.getDividendDiscountModels().add(calculation6);
+        calculation6.setUser(user2);
+
+        DividendDiscountRequestDTO userInput7 = new DividendDiscountRequestDTO("Starbuks", "sbux", 2.28, 8.11, 6.0);
+        DividendDiscountModel calculation7 = dividendDiscountMappingService.mapToEntity(userInput7);
+        user2.getDividendDiscountModels().add(calculation7);
+        calculation7.setUser(user2);
+
 
 
         userRepository.save(user1);

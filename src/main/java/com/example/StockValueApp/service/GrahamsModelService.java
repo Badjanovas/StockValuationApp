@@ -33,6 +33,7 @@ public class GrahamsModelService {
         grahamsModelRequestValidator.validateGrahamsModelRequest(grahamsRequestDTO);
         final GrahamsModel grahamsModel = grahamsModelMappingService.mapToEntity(grahamsRequestDTO);
         grahamsRepository.save(grahamsModel);
+
         log.info("Calculation created successfully.");
         return grahamsModelMappingService.mapToResponse(grahamsRepository.findAll());
     }
@@ -42,8 +43,8 @@ public class GrahamsModelService {
         globalExceptionValidator.validateId(id);
         grahamsModelRequestValidator.validateGrahamsModelById(id);
         grahamsRepository.deleteById(id);
-        log.info("Grahams valuation  with id number " + id + " was deleted from DB successfully.");
 
+        log.info("Grahams valuation  with id number " + id + " was deleted from DB successfully.");
         return grahamsModelMappingService.mapToResponse(grahamsRepository.findAll());
     }
 
@@ -76,6 +77,7 @@ public class GrahamsModelService {
         final List<GrahamsModel> valuationsByDate = grahamsRepository.findByCreationDate(date);
         grahamsModelRequestValidator.validateGrahamsModelList(valuationsByDate, date);
 
+        log.info("Found " + valuationsByDate.size() + " Grahams valuations made at: " + date);
         return grahamsModelMappingService.mapToResponse(valuationsByDate);
     }
 
