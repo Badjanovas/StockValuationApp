@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class testDataLoader implements CommandLineRunner {
 
-    private final GrahamsModelService grahamsModelService;
+
     private final UserRepository userRepository;
     private final GrahamsModelMappingService grahamsModelMappingService;
 
@@ -42,10 +42,27 @@ public class testDataLoader implements CommandLineRunner {
         User user2 = new User("Jons", "slaptazodis", "MrEmail@yahoo.com");
         User user3 = new User("Paulius", "paulius123", "fake@hotmail.com");
         User user4 = new User("kastytis", "sitytsak", "blablabla@gmail.com");
+
         GrahamsRequestDTO userInput = new GrahamsRequestDTO("Alibaba","baba",6.43,10.0,5.06);
         GrahamsModel calculation1 = grahamsModelMappingService.mapToEntity(userInput);
         user1.getGrahamsModels().add(calculation1);
         calculation1.setUser(user1);
+
+        GrahamsRequestDTO apple = new GrahamsRequestDTO("Apple", "aapl", 6.43, 12.0, 5.09);
+        GrahamsModel appleCalculation =  grahamsModelMappingService.mapToEntity(apple);
+        user2.getGrahamsModels().add(appleCalculation);
+        appleCalculation.setUser(user2);
+
+        DcfModelRequestDTO starbuks = new DcfModelRequestDTO("Starbuks", "sbux", 71250.0,3380.00,  22400.46,1130.0);
+        DcfModel starbuksCalculation = dcfModelMappingService.mapToEntity(starbuks);
+        user2.getDcfModels().add(starbuksCalculation);
+        starbuksCalculation.setUser(user2);
+
+        DividendDiscountRequestDTO nestle = new DividendDiscountRequestDTO("Nestle", "nesn.sw", 3.41,5.69, 3.5);
+        DividendDiscountModel nestleCalculation = dividendDiscountMappingService.mapToEntity(nestle);
+        user2.getDividendDiscountModels().add(nestleCalculation);
+        nestleCalculation.setUser(user2);
+
 
 
 
@@ -87,9 +104,12 @@ public class testDataLoader implements CommandLineRunner {
         userRepository.save(user3);
         userRepository.save(user4);
         dcfModelRepository.save(calculation2);
-        grahamsModelService.addGrahamsValuation(userInput);
         System.out.println(calculation1.getIntrinsicValue() + " This is the value of alibaba ");
 
         System.out.println(calculation2.getIntrinsicValue() + " This is the value of paypal");
+        System.out.println(appleCalculation.getIntrinsicValue() + " apple value should be 105.61");
+        System.out.println(starbuksCalculation.getIntrinsicValue() + " starbuks value should be 46.22");
+        System.out.println(nestleCalculation.getIntrinsicValue() + " nestle value should be 161.16");
+
     }
 }

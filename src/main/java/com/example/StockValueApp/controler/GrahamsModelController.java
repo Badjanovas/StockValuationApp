@@ -3,6 +3,7 @@ package com.example.StockValueApp.controler;
 import com.example.StockValueApp.dto.GrahamsRequestDTO;
 import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
 import com.example.StockValueApp.exception.NoGrahamsModelFoundException;
+import com.example.StockValueApp.exception.NoUsersFoundException;
 import com.example.StockValueApp.exception.NotValidIdException;
 import com.example.StockValueApp.service.GrahamsModelService;
 import lombok.RequiredArgsConstructor;
@@ -26,28 +27,29 @@ public class GrahamsModelController {
         return ResponseEntity.status(HttpStatus.OK).body(grahamsModelService.getAllGrahamsValuations());
     }
 
-    @GetMapping("/ticker/{ticker}")
-    public ResponseEntity<?> findByTicker(@PathVariable final String ticker) throws NoGrahamsModelFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(grahamsModelService.getGrahamsValuationsByTicker(ticker));
+    @GetMapping("/ticker/{ticker}/{userId}")
+    public ResponseEntity<?> findByTicker(@PathVariable final String ticker, @PathVariable final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, NoUsersFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(grahamsModelService.getGrahamsValuationsByTicker(ticker, userId));
     }
 
-    @GetMapping("/companyName/{companyName}")
-    public ResponseEntity<?> findByCompanyName(@PathVariable final String companyName) throws NoGrahamsModelFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(grahamsModelService.getGrahamsValuationsByCompanyName(companyName));
+    @GetMapping("/companyName/{companyName}/{userId}")
+    public ResponseEntity<?> findByCompanyName(@PathVariable final String companyName, @PathVariable final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, NoUsersFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(grahamsModelService.getGrahamsValuationsByCompanyName(companyName, userId));
     }
 
-    @GetMapping("/date/{date}")
-    public ResponseEntity<?> findByCreationDate(@PathVariable("date") final LocalDate date) throws NoGrahamsModelFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(grahamsModelService.getGrahamsValuationsByDate(date));
+    @GetMapping("/date/{date}/{userId}")
+    public ResponseEntity<?> findByCreationDate(@PathVariable("date") final LocalDate date, @PathVariable final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, NoUsersFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(grahamsModelService.getGrahamsValuationsByDate(date, userId));
     }
 
-    @PostMapping("/")
-    public ResponseEntity<?> addGrahamsValuation(@RequestBody final GrahamsRequestDTO grahamsRequestDTO) throws MandatoryFieldsMissingException {
-        return ResponseEntity.status(HttpStatus.OK).body(grahamsModelService.addGrahamsValuation(grahamsRequestDTO));
+    @PostMapping("/{userId}")
+    public ResponseEntity<?> addGrahamsValuation(@RequestBody final GrahamsRequestDTO grahamsRequestDTO, @PathVariable final Long userId) throws MandatoryFieldsMissingException, NotValidIdException, NoUsersFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(grahamsModelService.addGrahamsValuation(grahamsRequestDTO, userId));
     }
 
     @DeleteMapping("/{grahamsValuationId}")
     public ResponseEntity<?> deleteGrahamsModel(@PathVariable final Long grahamsValuationId) throws NoGrahamsModelFoundException, NotValidIdException {
-        return ResponseEntity.status(HttpStatus.OK).body(grahamsModelService.deleteGrahamsValuationById(grahamsValuationId));
+        grahamsModelService.deleteGrahamsValuationById(grahamsValuationId);
+        return ResponseEntity.status(HttpStatus.OK).body("Grahams valuation  with id number " + grahamsValuationId + " was deleted from DB successfully.");
     }
 }

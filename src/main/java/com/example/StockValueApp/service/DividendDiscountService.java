@@ -2,22 +2,22 @@ package com.example.StockValueApp.service;
 
 import com.example.StockValueApp.dto.DividendDiscountRequestDTO;
 import com.example.StockValueApp.dto.DividendDiscountResponseDTO;
-import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
-import com.example.StockValueApp.exception.NoDividendDiscountModelFoundException;
-import com.example.StockValueApp.exception.NoGrahamsModelFoundException;
-import com.example.StockValueApp.exception.NotValidIdException;
+import com.example.StockValueApp.exception.*;
 import com.example.StockValueApp.model.DividendDiscountModel;
 import com.example.StockValueApp.model.GrahamsModel;
 import com.example.StockValueApp.repository.DividendDiscountRepository;
 import com.example.StockValueApp.service.mappingService.DividendDiscountMappingService;
 import com.example.StockValueApp.validator.DividendDiscountRequestValidator;
 import com.example.StockValueApp.validator.GlobalExceptionValidator;
+import com.example.StockValueApp.validator.UserRequestValidator;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -28,7 +28,9 @@ public class DividendDiscountService {
     private final DividendDiscountMappingService dividendDiscountMappingService;
     private final DividendDiscountRequestValidator dividendDiscountRequestValidator;
     private final GlobalExceptionValidator globalExceptionValidator;
+    private final UserRequestValidator userRequestValidator;
 
+    @Cacheable(value = "allDividendDiscountValuationsCache")
     public List<DividendDiscountModel> getAllDividendDiscountValuations() throws NoDividendDiscountModelFoundException {
         final List<DividendDiscountModel> dividendDiscountValuations = dividendDiscountRepository.findAll();
         dividendDiscountRequestValidator.validateDividendDiscountList(dividendDiscountValuations);
@@ -37,28 +39,54 @@ public class DividendDiscountService {
         return dividendDiscountValuations;
     }
 
-    public List<DividendDiscountResponseDTO> getDividendDiscountValuationsByTicker(final String ticker) throws NoDividendDiscountModelFoundException {
-        final List<DividendDiscountModel> companiesValuations = dividendDiscountRepository.findByTickerIgnoreCase(ticker);
-        dividendDiscountRequestValidator.validateDividendDiscountList(companiesValuations, ticker);
+    @Cacheable(value = "DividendDiscountValuationsByTickerCache", key = "#ticker.concat('-').concat(#userId.toString())")
+    public List<DividendDiscountResponseDTO> getDividendDiscountValuationsByTicker(final String ticker, final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, NoUsersFoundException {
+        globalExceptionValidator.validateId(userId);
+        userRequestValidator.validateUserById(userId);
 
-        log.info("Found " + companiesValuations.size() + " Dividend discount company valuations with ticker: " + ticker);
-        return dividendDiscountMappingService.mapToResponse(companiesValuations);
+        final List<DividendDiscountModel> companiesValuations = dividendDiscountRepository.findByUserId(userId);
+
+        final List<DividendDiscountModel> filteredCompaniesByTicker = companiesValuations.stream()
+                .filter(valuation -> valuation.getTicker().equalsIgnoreCase(ticker))
+                .collect(Collectors.toList());
+
+        dividendDiscountRequestValidator.validateDividendDiscountList(filteredCompaniesByTicker, ticker);
+        log.info("Found " + filteredCompaniesByTicker.size() + " Dividend discount company valuations with ticker: " + ticker);
+        return dividendDiscountMappingService.mapToResponse(filteredCompaniesByTicker);
     }
 
-    public List<DividendDiscountResponseDTO> getDividendDiscountValuationsByCompanyName(final String companyName) throws NoDividendDiscountModelFoundException {
-        final List<DividendDiscountModel> companiesValuations = dividendDiscountRepository.findByCompanyNameIgnoreCase(companyName);
-        dividendDiscountRequestValidator.validateDividendDiscountList(companiesValuations, companyName);
+    @Cacheable(value = "dividendDiscountValuationsByCompanyNameCache", key = "#companyName.concat('-').concat(#userId.toString())")
+    public List<DividendDiscountResponseDTO> getDividendDiscountValuationsByCompanyName(final String companyName, final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, NoUsersFoundException {
+        globalExceptionValidator.validateId(userId);
+        userRequestValidator.validateUserById(userId);
 
-        log.info("Found " + companiesValuations.size() + " Dividend discount company valuations with name: " + companyName);
-        return dividendDiscountMappingService.mapToResponse(companiesValuations);
+        final List<DividendDiscountModel> companiesValuations = dividendDiscountRepository.findByUserId(userId);
+
+        final List<DividendDiscountModel> filteredCompaniesByCompanyName = companiesValuations.stream()
+                .filter(valuation -> valuation.getCompanyName().equalsIgnoreCase(companyName))
+                .collect(Collectors.toList());
+
+        dividendDiscountRequestValidator.validateDividendDiscountList(filteredCompaniesByCompanyName, companyName);
+
+        log.info("Found " + filteredCompaniesByCompanyName.size() + " Dividend discount company valuations with name: " + companyName);
+        return dividendDiscountMappingService.mapToResponse(filteredCompaniesByCompanyName);
     }
 
-    public List<DividendDiscountResponseDTO> getDividendDiscountValuationsByDate(final LocalDate date) throws NoDividendDiscountModelFoundException {
-        final List<DividendDiscountModel> valuationsByDate = dividendDiscountRepository.findByCreationDate(date);
-        dividendDiscountRequestValidator.validateDividendDiscountList(valuationsByDate, date);
+    @Cacheable(value = "dividendDiscountValuationsByDateCache", key = "#date.toString().concat('-').concat(#userId.toString())")
+    public List<DividendDiscountResponseDTO> getDividendDiscountValuationsByDate(final LocalDate date, final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, NoUsersFoundException {
+        globalExceptionValidator.validateId(userId);
+        userRequestValidator.validateUserById(userId);
 
-        log.info("Found " + valuationsByDate.size() + " Dividend discount valuations made at: " + date);
-        return dividendDiscountMappingService.mapToResponse(valuationsByDate);
+        final List<DividendDiscountModel> companiesValuations = dividendDiscountRepository.findByUserId(userId);
+
+        final List<DividendDiscountModel> filteredCompaniesByDate = companiesValuations.stream()
+                .filter(valuation -> valuation.getCreationDate().equals(date))
+                .collect(Collectors.toList());
+
+        dividendDiscountRequestValidator.validateDividendDiscountList(filteredCompaniesByDate, date);
+
+        log.info("Found " + filteredCompaniesByDate.size() + " Dividend discount valuations made at: " + date);
+        return dividendDiscountMappingService.mapToResponse(filteredCompaniesByDate);
     }
 
     public List<DividendDiscountResponseDTO> addDividendDiscountValuation(final DividendDiscountRequestDTO dividendDiscountRequestDTO) throws MandatoryFieldsMissingException {

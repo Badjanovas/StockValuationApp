@@ -4,19 +4,35 @@ import com.example.StockValueApp.dto.GrahamsRequestDTO;
 import com.example.StockValueApp.dto.GrahamsResponseDTO;
 import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
 import com.example.StockValueApp.exception.NoGrahamsModelFoundException;
+import com.example.StockValueApp.exception.NoUsersFoundException;
 import com.example.StockValueApp.exception.NotValidIdException;
 import com.example.StockValueApp.model.GrahamsModel;
+import com.example.StockValueApp.model.User;
 import com.example.StockValueApp.repository.GrahamsModelRepository;
+import com.example.StockValueApp.repository.UserRepository;
 import com.example.StockValueApp.service.mappingService.GrahamsModelMappingService;
+import com.example.StockValueApp.util.CacheConfig;
 import com.example.StockValueApp.validator.GlobalExceptionValidator;
 import com.example.StockValueApp.validator.GrahamsModelRequestValidator;
+import com.example.StockValueApp.validator.UserRequestValidator;
 import lombok.Data;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -27,60 +43,103 @@ public class GrahamsModelService {
     private final GrahamsModelMappingService grahamsModelMappingService;
     private final GlobalExceptionValidator globalExceptionValidator;
     private final GrahamsModelRequestValidator grahamsModelRequestValidator;
+    private final UserRequestValidator userRequestValidator;
+    private final UserRepository userRepository;
 
-
-    public List<GrahamsResponseDTO> addGrahamsValuation(final GrahamsRequestDTO grahamsRequestDTO) throws MandatoryFieldsMissingException {
+    @Caching(evict = {
+            @CacheEvict(value = "grahamsValuationsCache", allEntries = true),
+            @CacheEvict(value = "grahamsValuationsByTickerCache", allEntries = true),
+            @CacheEvict(value = "grahamsValuationByCompanyNameCache", allEntries = true),
+            @CacheEvict(value = "grahamsValuationsByDateCache", allEntries = true)
+    })
+    public List<GrahamsResponseDTO> addGrahamsValuation(final GrahamsRequestDTO grahamsRequestDTO, final Long userId) throws MandatoryFieldsMissingException, NotValidIdException, NoUsersFoundException {
+        globalExceptionValidator.validateId(userId);
+        userRequestValidator.validateUserById(userId);
         grahamsModelRequestValidator.validateGrahamsModelRequest(grahamsRequestDTO);
+        final User user = userRepository.getReferenceById(userId);
+
         final GrahamsModel grahamsModel = grahamsModelMappingService.mapToEntity(grahamsRequestDTO);
+        user.getGrahamsModels().add(grahamsModel);
+        grahamsModel.setUser(user);
+
         grahamsRepository.save(grahamsModel);
 
         log.info("Calculation created successfully.");
-        return grahamsModelMappingService.mapToResponse(grahamsRepository.findAll());
+        return grahamsModelMappingService.mapToResponse(grahamsRepository.findByUserId(userId));
     }
-
+    @Caching(evict = {
+            @CacheEvict(value = "grahamsValuationsCache", allEntries = true),
+            @CacheEvict(value = "grahamsValuationsByTickerCache", allEntries = true),
+            @CacheEvict(value = "grahamsValuationByCompanyNameCache", allEntries = true),
+            @CacheEvict(value = "grahamsValuationsByDateCache", allEntries = true)
+    })
     // sita gal geriau daryti void nes gali buti daug skaiciavimu tad visada grazinant visus po istrinimo bus apkrauta sistema??
-    public List<GrahamsResponseDTO> deleteGrahamsValuationById(final Long id) throws NotValidIdException, NoGrahamsModelFoundException {
+    public void deleteGrahamsValuationById(final Long id) throws NotValidIdException, NoGrahamsModelFoundException {
         globalExceptionValidator.validateId(id);
         grahamsModelRequestValidator.validateGrahamsModelById(id);
         grahamsRepository.deleteById(id);
-
         log.info("Grahams valuation  with id number " + id + " was deleted from DB successfully.");
-        return grahamsModelMappingService.mapToResponse(grahamsRepository.findAll());
     }
 
+    @Cacheable(value = "grahamsValuationsCache")
     public List<GrahamsModel> getAllGrahamsValuations() throws NoGrahamsModelFoundException {
-        final List<GrahamsModel> grahamsValuations = new ArrayList<>();
-        grahamsValuations.addAll(grahamsRepository.findAll());
+        final List<GrahamsModel> grahamsValuations = grahamsRepository.findAll();
         grahamsModelRequestValidator.validateGrahamsModelList(grahamsValuations);
 
         log.info(grahamsValuations.size() + " Grahams valuations were found in DB.");
         return grahamsValuations;
     }
 
-    public List<GrahamsResponseDTO> getGrahamsValuationsByTicker(final String ticker) throws NoGrahamsModelFoundException {
-       final List<GrahamsModel> companiesValuations = grahamsRepository.findByTickerIgnoreCase(ticker);
-       grahamsModelRequestValidator.validateGrahamsModelList(companiesValuations, ticker);
+    // The key expression #ticker.concat('-').concat(#usersId.toString()) constructs a unique identifier for caching by concatenating the stock ticker symbol (ticker)
+// and user ID (usersId), separated by a hyphen. This ensures that cached data is specific to both the stock and the user, preventing cache collisions between
+// different stocks or users.
+    @Cacheable(value = "grahamsValuationsByTickerCache", key = "#ticker.concat('-').concat(#userId.toString())")
+    public List<GrahamsResponseDTO> getGrahamsValuationsByTicker(final String ticker, final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, NoUsersFoundException {
+        globalExceptionValidator.validateId(userId);
+        userRequestValidator.validateUserById(userId);
+        final List<GrahamsModel> companiesValuations = grahamsRepository.findByUserId(userId);
 
-       log.info("Found " + companiesValuations.size() + " Grahams company valuations with ticker: " + ticker);
-       return grahamsModelMappingService.mapToResponse(companiesValuations);
+        final List<GrahamsModel> filteredCompaniesByTicker = companiesValuations.stream()
+                .filter(valuation -> valuation.getTicker().equalsIgnoreCase(ticker))
+                .collect(Collectors.toList());
+
+        grahamsModelRequestValidator.validateGrahamsModelList(filteredCompaniesByTicker, ticker);
+
+        log.info("Found " + companiesValuations.size() + " Grahams company valuations with ticker: " + ticker);
+        return grahamsModelMappingService.mapToResponse(filteredCompaniesByTicker);
     }
 
-    public List<GrahamsResponseDTO> getGrahamsValuationsByCompanyName(final String companyName) throws NoGrahamsModelFoundException {
-        final List<GrahamsModel> companiesValuations = grahamsRepository.findByNameIgnoreCase(companyName);
-        grahamsModelRequestValidator.validateGrahamsModelList(companiesValuations, companyName);
+    @Cacheable(value = "grahamsValuationByCompanyNameCache", key = "#companyName.concat('-').concat(#userId.toString())")
+    public List<GrahamsResponseDTO> getGrahamsValuationsByCompanyName(final String companyName, final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, NoUsersFoundException {
+        globalExceptionValidator.validateId(userId);
+        userRequestValidator.validateUserById(userId);
+        final List<GrahamsModel> companiesValuations = grahamsRepository.findByUserId(userId);
 
-        log.info("Found " + companiesValuations.size() + " Grahams company valuations with ticker: " + companyName);
-        return grahamsModelMappingService.mapToResponse(companiesValuations);
+        final List<GrahamsModel> filteredCompaniesByCompanyName = companiesValuations.stream()
+                .filter(valuation -> valuation.getName().equalsIgnoreCase(companyName))
+                .collect(Collectors.toList());
+
+        grahamsModelRequestValidator.validateGrahamsModelList(filteredCompaniesByCompanyName, companyName);
+
+        log.info("Found " + filteredCompaniesByCompanyName.size() + " Grahams company valuations with ticker: " + companyName);
+        return grahamsModelMappingService.mapToResponse(filteredCompaniesByCompanyName);
     }
 
-    public List<GrahamsResponseDTO> getGrahamsValuationsByDate(final LocalDate date) throws NoGrahamsModelFoundException {
-        final List<GrahamsModel> valuationsByDate = grahamsRepository.findByCreationDate(date);
-        grahamsModelRequestValidator.validateGrahamsModelList(valuationsByDate, date);
+    @Cacheable(value = "grahamsValuationsByDateCache", key = "#date.toString().concat('-').concat(#userId.toString())")
+    public List<GrahamsResponseDTO> getGrahamsValuationsByDate(final LocalDate date, final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, NoUsersFoundException {
+        globalExceptionValidator.validateId(userId);
+        userRequestValidator.validateUserById(userId);
+        final List<GrahamsModel> companiesValuations = grahamsRepository.findByUserId(userId);
 
-        log.info("Found " + valuationsByDate.size() + " Grahams valuations made at: " + date);
-        return grahamsModelMappingService.mapToResponse(valuationsByDate);
+        final List<GrahamsModel> filteredValuationsByDate = companiesValuations.stream()
+                .filter(valuation -> valuation.getCreationDate().equals(date))
+                .collect(Collectors.toList());
+
+        grahamsModelRequestValidator.validateGrahamsModelList(filteredValuationsByDate, date);
+
+        log.info("Found " + filteredValuationsByDate.size() + " Grahams valuations made at: " + date);
+        return grahamsModelMappingService.mapToResponse(filteredValuationsByDate);
     }
-
 
 
 }

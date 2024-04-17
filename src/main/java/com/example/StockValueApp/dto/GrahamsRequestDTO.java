@@ -10,7 +10,7 @@ import lombok.Data;
 public class GrahamsRequestDTO {
 
     private String companyName;
-    private String CompanyTicker;
+    private String companyTicker;
     private Double eps;
     private Double growthRate;
     private Double currentYieldOfBonds;

@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface GrahamsModelRepository extends JpaRepository<GrahamsModel, Long> {
 
+    List<GrahamsModel> findByUserId(Long id);
+
     List<GrahamsModel> findByTickerIgnoreCase(String ticker);
 
     List<GrahamsModel> findByNameIgnoreCase(String name);

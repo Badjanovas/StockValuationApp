@@ -3,6 +3,7 @@ package com.example.StockValueApp.controler;
 import com.example.StockValueApp.dto.DividendDiscountRequestDTO;
 import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
 import com.example.StockValueApp.exception.NoDividendDiscountModelFoundException;
+import com.example.StockValueApp.exception.NoUsersFoundException;
 import com.example.StockValueApp.exception.NotValidIdException;
 import com.example.StockValueApp.service.DividendDiscountService;
 import lombok.RequiredArgsConstructor;
@@ -26,19 +27,19 @@ public class DividendDiscountController {
         return ResponseEntity.status(HttpStatus.OK).body(dividendDiscountService.getAllDividendDiscountValuations());
     }
 
-    @GetMapping("/ticker/{ticker}")
-    public ResponseEntity<?> findByTicker(@PathVariable final String ticker) throws NoDividendDiscountModelFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(dividendDiscountService.getDividendDiscountValuationsByTicker(ticker));
+    @GetMapping("/ticker/{ticker}/{userId}")
+    public ResponseEntity<?> findByTicker(@PathVariable final String ticker, @PathVariable final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, NoUsersFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(dividendDiscountService.getDividendDiscountValuationsByTicker(ticker, userId));
     }
 
-    @GetMapping("/companyName/{companyName}")
-    public ResponseEntity<?> findByCompanyName(@PathVariable final String companyName) throws NoDividendDiscountModelFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(dividendDiscountService.getDividendDiscountValuationsByCompanyName(companyName));
+    @GetMapping("/companyName/{companyName}/{userId}")
+    public ResponseEntity<?> findByCompanyName(@PathVariable final String companyName, @PathVariable final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, NoUsersFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(dividendDiscountService.getDividendDiscountValuationsByCompanyName(companyName, userId));
     }
 
-    @GetMapping("/date/{date}")
-    public ResponseEntity<?> findByDate(@PathVariable("date") final LocalDate date) throws NoDividendDiscountModelFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(dividendDiscountService.getDividendDiscountValuationsByDate(date));
+    @GetMapping("/date/{date}/{userId}")
+    public ResponseEntity<?> findByDate(@PathVariable("date") final LocalDate date, final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, NoUsersFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(dividendDiscountService.getDividendDiscountValuationsByDate(date,userId));
     }
 
     @PostMapping("/")

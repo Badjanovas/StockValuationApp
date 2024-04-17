@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Builder
-public class DividendDiscountRequestDTO {
+public class DividendDiscountRequestDTO  {
 
     private String companyName;
     private String ticker;

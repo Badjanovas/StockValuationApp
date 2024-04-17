@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface DividendDiscountRepository extends JpaRepository<DividendDiscountModel, Long> {
 
+    List<DividendDiscountModel> findByUserId(Long id);
+
     List<DividendDiscountModel> findByTickerIgnoreCase(String ticker);
 
     List<DividendDiscountModel> findByCompanyNameIgnoreCase(String companyName);
