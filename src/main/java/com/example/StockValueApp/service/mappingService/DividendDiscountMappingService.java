@@ -3,6 +3,7 @@ package com.example.StockValueApp.service.mappingService;
 import com.example.StockValueApp.dto.DividendDiscountRequestDTO;
 import com.example.StockValueApp.dto.DividendDiscountResponseDTO;
 import com.example.StockValueApp.model.DividendDiscountModel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -11,7 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class DividendDiscountMappingService {
+//    Skaiciavimai sulusta jeigu paduodu vienuoda skaicius i wacc ir i expected growth rate
 
     public DividendDiscountModel mapToEntity(final DividendDiscountRequestDTO requestDTO){
         return DividendDiscountModel.builder()
@@ -48,6 +51,10 @@ public class DividendDiscountMappingService {
     }
 
     private Double roundToTwoDecimal(final Double numberToRound){
+        if (numberToRound == null) {
+            log.error("Attempted to round a null value.");
+            return null; // Adjust based on how you wish to handle nulls
+        }
         return BigDecimal.valueOf(numberToRound)
                 .setScale(2, RoundingMode.HALF_UP)
                 .doubleValue();

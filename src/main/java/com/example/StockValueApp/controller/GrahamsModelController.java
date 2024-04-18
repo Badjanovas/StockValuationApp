@@ -1,10 +1,7 @@
-package com.example.StockValueApp.controler;
+package com.example.StockValueApp.controller;
 
 import com.example.StockValueApp.dto.GrahamsRequestDTO;
-import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
-import com.example.StockValueApp.exception.NoGrahamsModelFoundException;
-import com.example.StockValueApp.exception.NoUsersFoundException;
-import com.example.StockValueApp.exception.NotValidIdException;
+import com.example.StockValueApp.exception.*;
 import com.example.StockValueApp.service.GrahamsModelService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,9 +44,9 @@ public class GrahamsModelController {
         return ResponseEntity.status(HttpStatus.OK).body(grahamsModelService.addGrahamsValuation(grahamsRequestDTO, userId));
     }
 
-    @DeleteMapping("/{grahamsValuationId}")
-    public ResponseEntity<?> deleteGrahamsModel(@PathVariable final Long grahamsValuationId) throws NoGrahamsModelFoundException, NotValidIdException {
-        grahamsModelService.deleteGrahamsValuationById(grahamsValuationId);
+    @DeleteMapping("/{grahamsValuationId}/{userId}")
+    public ResponseEntity<?> deleteGrahamsModel(@PathVariable final Long grahamsValuationId,@PathVariable final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, ValuationDoestExistForSelectedUser, NoUsersFoundException {
+        grahamsModelService.deleteGrahamsValuationById(grahamsValuationId, userId);
         return ResponseEntity.status(HttpStatus.OK).body("Grahams valuation  with id number " + grahamsValuationId + " was deleted from DB successfully.");
     }
 }

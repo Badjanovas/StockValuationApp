@@ -1,6 +1,7 @@
 package com.example.StockValueApp.validator;
 
 import com.example.StockValueApp.dto.DividendDiscountRequestDTO;
+import com.example.StockValueApp.exception.IncorrectCompaniesExpectedGrowthException;
 import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
 import com.example.StockValueApp.exception.NoDividendDiscountModelFoundException;
 import com.example.StockValueApp.exception.NoGrahamsModelFoundException;
@@ -74,6 +75,13 @@ public class DividendDiscountRequestValidator {
         if (!dividendDiscountRepository.existsById(id)){
             log.error("Dividend discount valuation with id number " + id + " not found.");
             throw new NoDividendDiscountModelFoundException("Dividend discount valuation with id number " + id + " not found.");
+        }
+    }
+
+    public void validateExpectedGrowthRateInput(final Double wacc, final Double expectedGrowthRate) throws IncorrectCompaniesExpectedGrowthException {
+        if (expectedGrowthRate >= wacc){
+            log.error("Dividend discount model isn't suitable to calculate intrinsic value if expected growth rate is higher or equal to the weighted average cost of capital.");
+            throw new IncorrectCompaniesExpectedGrowthException("Dividend discount model isn't suitable to calculate intrinsic value if expected growth rate is higher or equal to the weighted average cost of capital.");
         }
     }
 

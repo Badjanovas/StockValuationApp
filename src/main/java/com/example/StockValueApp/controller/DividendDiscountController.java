@@ -1,10 +1,7 @@
-package com.example.StockValueApp.controler;
+package com.example.StockValueApp.controller;
 
 import com.example.StockValueApp.dto.DividendDiscountRequestDTO;
-import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
-import com.example.StockValueApp.exception.NoDividendDiscountModelFoundException;
-import com.example.StockValueApp.exception.NoUsersFoundException;
-import com.example.StockValueApp.exception.NotValidIdException;
+import com.example.StockValueApp.exception.*;
 import com.example.StockValueApp.service.DividendDiscountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +39,9 @@ public class DividendDiscountController {
         return ResponseEntity.status(HttpStatus.OK).body(dividendDiscountService.getDividendDiscountValuationsByDate(date,userId));
     }
 
-    @PostMapping("/")
-    public ResponseEntity<?> addDividendDiscountValuation(@RequestBody final DividendDiscountRequestDTO dividendDiscountRequestDTO) throws MandatoryFieldsMissingException {
-        return ResponseEntity.status(HttpStatus.OK).body(dividendDiscountService.addDividendDiscountValuation(dividendDiscountRequestDTO));
+    @PostMapping("/{userId}")
+    public ResponseEntity<?> addDividendDiscountValuation(@RequestBody final DividendDiscountRequestDTO dividendDiscountRequestDTO, @PathVariable final Long userId) throws MandatoryFieldsMissingException, NotValidIdException, NoUsersFoundException, IncorrectCompaniesExpectedGrowthException {
+        return ResponseEntity.status(HttpStatus.OK).body(dividendDiscountService.addDividendDiscountValuation(dividendDiscountRequestDTO, userId));
     }
 
     @DeleteMapping("/{id}")

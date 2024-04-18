@@ -1,4 +1,4 @@
-package com.example.StockValueApp.controler;
+package com.example.StockValueApp.controller;
 
 import com.example.StockValueApp.dto.DcfModelRequestDTO;
 import com.example.StockValueApp.exception.MandatoryFieldsMissingException;

@@ -3,15 +3,23 @@ package com.example.StockValueApp.validator;
 import com.example.StockValueApp.dto.GrahamsRequestDTO;
 import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
 import com.example.StockValueApp.exception.NoGrahamsModelFoundException;
+import com.example.StockValueApp.exception.NoUsersFoundException;
+import com.example.StockValueApp.exception.ValuationDoestExistForSelectedUser;
 import com.example.StockValueApp.model.GrahamsModel;
+import com.example.StockValueApp.model.User;
 import com.example.StockValueApp.repository.GrahamsModelRepository;
+import com.example.StockValueApp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -75,5 +83,11 @@ public class GrahamsModelRequestValidator {
             throw new NoGrahamsModelFoundException("There are no valuations made in " + date);
         }
     }
-
+    public void validateGrahamsModelForUser(final Long valuationId, final Long userId) throws ValuationDoestExistForSelectedUser {
+        Optional<GrahamsModel> valuation = grahamsModelRepository.findById(valuationId);
+        if (!valuation.isPresent() || !valuation.get().getUser().getId().equals(userId)) {
+            log.error("Valuation does not exist for this user");
+            throw new ValuationDoestExistForSelectedUser("Valuation does not exist for this user");
+        }
+    }
 }

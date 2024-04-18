@@ -2,10 +2,7 @@ package com.example.StockValueApp.service;
 
 import com.example.StockValueApp.dto.GrahamsRequestDTO;
 import com.example.StockValueApp.dto.GrahamsResponseDTO;
-import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
-import com.example.StockValueApp.exception.NoGrahamsModelFoundException;
-import com.example.StockValueApp.exception.NoUsersFoundException;
-import com.example.StockValueApp.exception.NotValidIdException;
+import com.example.StockValueApp.exception.*;
 import com.example.StockValueApp.model.GrahamsModel;
 import com.example.StockValueApp.model.User;
 import com.example.StockValueApp.repository.GrahamsModelRepository;
@@ -15,6 +12,8 @@ import com.example.StockValueApp.util.CacheConfig;
 import com.example.StockValueApp.validator.GlobalExceptionValidator;
 import com.example.StockValueApp.validator.GrahamsModelRequestValidator;
 import com.example.StockValueApp.validator.UserRequestValidator;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.Data;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -63,22 +62,24 @@ public class GrahamsModelService {
         grahamsModel.setUser(user);
 
         grahamsRepository.save(grahamsModel);
-
         log.info("Calculation created successfully.");
         return grahamsModelMappingService.mapToResponse(grahamsRepository.findByUserId(userId));
     }
+
     @Caching(evict = {
             @CacheEvict(value = "grahamsValuationsCache", allEntries = true),
             @CacheEvict(value = "grahamsValuationsByTickerCache", allEntries = true),
             @CacheEvict(value = "grahamsValuationByCompanyNameCache", allEntries = true),
             @CacheEvict(value = "grahamsValuationsByDateCache", allEntries = true)
     })
-    // sita gal geriau daryti void nes gali buti daug skaiciavimu tad visada grazinant visus po istrinimo bus apkrauta sistema??
-    public void deleteGrahamsValuationById(final Long id) throws NotValidIdException, NoGrahamsModelFoundException {
-        globalExceptionValidator.validateId(id);
-        grahamsModelRequestValidator.validateGrahamsModelById(id);
-        grahamsRepository.deleteById(id);
-        log.info("Grahams valuation  with id number " + id + " was deleted from DB successfully.");
+    public void deleteGrahamsValuationById(final Long valuationId, final Long userId) throws NotValidIdException, NoGrahamsModelFoundException, ValuationDoestExistForSelectedUser {
+        globalExceptionValidator.validateId(valuationId);
+        globalExceptionValidator.validateId(userId);
+        grahamsModelRequestValidator.validateGrahamsModelById(valuationId);
+        grahamsModelRequestValidator.validateGrahamsModelForUser(valuationId, userId);
+
+        grahamsRepository.deleteById(valuationId);
+        log.info("Grahams valuation  with id number " + valuationId + " was deleted from DB successfully.");
     }
 
     @Cacheable(value = "grahamsValuationsCache")
