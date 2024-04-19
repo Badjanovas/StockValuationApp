@@ -1,10 +1,7 @@
 package com.example.StockValueApp.controller;
 
 import com.example.StockValueApp.dto.DcfModelRequestDTO;
-import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
-import com.example.StockValueApp.exception.NoDcfValuationsFoundException;
-import com.example.StockValueApp.exception.NoGrahamsModelFoundException;
-import com.example.StockValueApp.exception.NotValidIdException;
+import com.example.StockValueApp.exception.*;
 import com.example.StockValueApp.service.DcfModelService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,29 +24,29 @@ public class DcfModelController {
         return ResponseEntity.status(HttpStatus.OK).body(dcfModelService.getAllDcfValuations());
     }
 
-    @GetMapping("/ticker/{ticker}")
-    public ResponseEntity<?> findByTicker(@PathVariable final String ticker) throws NoDcfValuationsFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(dcfModelService.getDcfValuationsByTicker(ticker));
+    @GetMapping("/ticker/{ticker}/{userId}")
+    public ResponseEntity<?> findByTicker(@PathVariable final String ticker, @PathVariable final Long userId) throws NoDcfValuationsFoundException, NotValidIdException, NoUsersFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(dcfModelService.getDcfValuationsByTicker(ticker, userId));
     }
 
-    @GetMapping("/companyName/{companyName}")
-    public ResponseEntity<?> findByCompanyNAme(@PathVariable final String companyName) throws NoDcfValuationsFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(dcfModelService.getDcfValuationsByCompanyName(companyName));
+    @GetMapping("/companyName/{companyName}/{userId}")
+    public ResponseEntity<?> findByCompanyNAme(@PathVariable final String companyName, @PathVariable final Long userId) throws NoDcfValuationsFoundException, NotValidIdException, NoUsersFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(dcfModelService.getDcfValuationsByCompanyName(companyName, userId));
     }
 
-    @GetMapping("/date/{date}")
-    public ResponseEntity<?> findByDate(@PathVariable("date") final LocalDate date) throws NoGrahamsModelFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(dcfModelService.getDcfValuationByDate(date));
+    @GetMapping("/date/{date}/{userId}")
+    public ResponseEntity<?> findByDate(@PathVariable("date") final LocalDate date, @PathVariable final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, NoUsersFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(dcfModelService.getDcfValuationByDate(date, userId));
     }
 
-    @PostMapping("/")
-    public ResponseEntity<?> addDcfValuation(@RequestBody final DcfModelRequestDTO dcfModelRequestDTO) throws MandatoryFieldsMissingException {
-        return ResponseEntity.status(HttpStatus.OK).body(dcfModelService.addDcfValuation(dcfModelRequestDTO));
+    @PostMapping("/{userId}")
+    public ResponseEntity<?> addDcfValuation(@RequestBody final DcfModelRequestDTO dcfModelRequestDTO, @PathVariable final Long userId) throws MandatoryFieldsMissingException, NotValidIdException, NoUsersFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(dcfModelService.addDcfValuation(dcfModelRequestDTO, userId));
     }
 
-    @DeleteMapping("/{dcfValuationId}")
-    public ResponseEntity<?> deleteDcfValuationById(@PathVariable final Long dcfValuationId) throws NotValidIdException, NoDcfValuationsFoundException {
-        dcfModelService.deleteDcfValuationById(dcfValuationId);
+    @DeleteMapping("/{dcfValuationId}/{userId}")
+    public ResponseEntity<?> deleteDcfValuationById(@PathVariable final Long dcfValuationId, @PathVariable final Long userId) throws NotValidIdException, NoDcfValuationsFoundException, ValuationDoestExistForSelectedUser {
+        dcfModelService.deleteDcfValuationById(dcfValuationId, userId);
         return ResponseEntity.status(HttpStatus.OK).body("Discounted cash flow valuation with id number " + dcfValuationId + " was deleted from DB successfully.");
     }
 }

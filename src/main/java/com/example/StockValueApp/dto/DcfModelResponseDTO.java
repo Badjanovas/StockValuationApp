@@ -5,13 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DcfModelResponseDTO {
+public class DcfModelResponseDTO implements Serializable {
 
     private String companyName;
     private String ticker;

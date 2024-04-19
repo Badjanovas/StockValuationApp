@@ -24,6 +24,7 @@ public class UserService {
     private final UserMappingService userMappingService;
     private final UserRequestValidator userRequestValidator;
     private final GlobalExceptionValidator globalExceptionValidator;
+    private final EmailSendingService emailSendingService;
 
     public List<User> getAllUsers() throws NoUsersFoundException {
         log.info("Looking for users in DB.");
@@ -42,6 +43,7 @@ public class UserService {
         final User user = userMappingService.mapToEntity(userRequestDTO);
         userRepository.save(user);
         globalExceptionValidator.validateId(user.getId());
+        emailSendingService.sendEmail(userRequestDTO.getEmail());
         log.info("New user " + user.getUserName() + " was created and saved successfully.");
         return userMappingService.mapToResponse(userRepository.findAll());
     }

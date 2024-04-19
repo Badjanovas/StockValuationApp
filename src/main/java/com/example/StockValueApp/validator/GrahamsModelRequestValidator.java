@@ -85,7 +85,7 @@ public class GrahamsModelRequestValidator {
     }
     public void validateGrahamsModelForUser(final Long valuationId, final Long userId) throws ValuationDoestExistForSelectedUser {
         Optional<GrahamsModel> valuation = grahamsModelRepository.findById(valuationId);
-        if (!valuation.isPresent() || !valuation.get().getUser().getId().equals(userId)) {
+        if (valuation.isEmpty() || !valuation.get().getUser().getId().equals(userId)) {
             log.error("Valuation does not exist for this user");
             throw new ValuationDoestExistForSelectedUser("Valuation does not exist for this user");
         }

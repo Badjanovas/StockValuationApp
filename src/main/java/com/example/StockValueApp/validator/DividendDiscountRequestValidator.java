@@ -1,10 +1,7 @@
 package com.example.StockValueApp.validator;
 
 import com.example.StockValueApp.dto.DividendDiscountRequestDTO;
-import com.example.StockValueApp.exception.IncorrectCompaniesExpectedGrowthException;
-import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
-import com.example.StockValueApp.exception.NoDividendDiscountModelFoundException;
-import com.example.StockValueApp.exception.NoGrahamsModelFoundException;
+import com.example.StockValueApp.exception.*;
 import com.example.StockValueApp.model.DividendDiscountModel;
 import com.example.StockValueApp.model.GrahamsModel;
 import com.example.StockValueApp.repository.DividendDiscountRepository;
@@ -14,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -82,6 +80,14 @@ public class DividendDiscountRequestValidator {
         if (expectedGrowthRate >= wacc){
             log.error("Dividend discount model isn't suitable to calculate intrinsic value if expected growth rate is higher or equal to the weighted average cost of capital.");
             throw new IncorrectCompaniesExpectedGrowthException("Dividend discount model isn't suitable to calculate intrinsic value if expected growth rate is higher or equal to the weighted average cost of capital.");
+        }
+    }
+
+    public void validateDividendDiscountModelForUser(final Long valuationId, final Long userId) throws ValuationDoestExistForSelectedUser {
+        Optional<DividendDiscountModel> valuation = dividendDiscountRepository.findById(valuationId);
+        if (!valuation.isPresent() || !valuation.get().getUser().getId().equals(userId)){
+            log.error("Valuation does not exist for this user");
+            throw new ValuationDoestExistForSelectedUser("Valuation does not exist for this user");
         }
     }
 

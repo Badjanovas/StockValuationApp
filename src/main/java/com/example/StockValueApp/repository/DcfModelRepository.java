@@ -7,8 +7,12 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface DcfModelRepository extends JpaRepository<DcfModel, Long> {
+
+    List<DcfModel> findByUserId(Long id);
 
     List<DcfModel> findByTickerIgnoreCase(String ticker);
 

@@ -4,6 +4,7 @@ import com.example.StockValueApp.dto.DcfModelRequestDTO;
 import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
 import com.example.StockValueApp.exception.NoDcfValuationsFoundException;
 import com.example.StockValueApp.exception.NoGrahamsModelFoundException;
+import com.example.StockValueApp.exception.ValuationDoestExistForSelectedUser;
 import com.example.StockValueApp.model.DcfModel;
 import com.example.StockValueApp.model.GrahamsModel;
 import com.example.StockValueApp.repository.DcfModelRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -77,6 +79,14 @@ public class DcfRequestValidator {
         if (!dcfModelRepository.existsById(id)){
             log.error("Discounted cash flow valuation with id number " + id + " not found.");
             throw new NoDcfValuationsFoundException("Discounted cash flow valuation with id number " + id + " not found.");
+        }
+    }
+
+    public void validateDcfModelForUser(final Long valuationId, final Long userId) throws ValuationDoestExistForSelectedUser {
+        Optional<DcfModel> valuation = dcfModelRepository.findById(valuationId);
+        if (valuation.isEmpty() || !valuation.get().getUser().getId().equals(userId)){
+            log.error("Valuation does not exist for this user");
+            throw new ValuationDoestExistForSelectedUser("Valuation does not exist for this user");
         }
     }
 

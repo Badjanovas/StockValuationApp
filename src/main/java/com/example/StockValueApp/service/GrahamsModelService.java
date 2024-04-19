@@ -44,43 +44,7 @@ public class GrahamsModelService {
     private final GrahamsModelRequestValidator grahamsModelRequestValidator;
     private final UserRequestValidator userRequestValidator;
     private final UserRepository userRepository;
-
-    @Caching(evict = {
-            @CacheEvict(value = "grahamsValuationsCache", allEntries = true),
-            @CacheEvict(value = "grahamsValuationsByTickerCache", allEntries = true),
-            @CacheEvict(value = "grahamsValuationByCompanyNameCache", allEntries = true),
-            @CacheEvict(value = "grahamsValuationsByDateCache", allEntries = true)
-    })
-    public List<GrahamsResponseDTO> addGrahamsValuation(final GrahamsRequestDTO grahamsRequestDTO, final Long userId) throws MandatoryFieldsMissingException, NotValidIdException, NoUsersFoundException {
-        globalExceptionValidator.validateId(userId);
-        userRequestValidator.validateUserById(userId);
-        grahamsModelRequestValidator.validateGrahamsModelRequest(grahamsRequestDTO);
-        final User user = userRepository.getReferenceById(userId);
-
-        final GrahamsModel grahamsModel = grahamsModelMappingService.mapToEntity(grahamsRequestDTO);
-        user.getGrahamsModels().add(grahamsModel);
-        grahamsModel.setUser(user);
-
-        grahamsRepository.save(grahamsModel);
-        log.info("Calculation created successfully.");
-        return grahamsModelMappingService.mapToResponse(grahamsRepository.findByUserId(userId));
-    }
-
-    @Caching(evict = {
-            @CacheEvict(value = "grahamsValuationsCache", allEntries = true),
-            @CacheEvict(value = "grahamsValuationsByTickerCache", allEntries = true),
-            @CacheEvict(value = "grahamsValuationByCompanyNameCache", allEntries = true),
-            @CacheEvict(value = "grahamsValuationsByDateCache", allEntries = true)
-    })
-    public void deleteGrahamsValuationById(final Long valuationId, final Long userId) throws NotValidIdException, NoGrahamsModelFoundException, ValuationDoestExistForSelectedUser {
-        globalExceptionValidator.validateId(valuationId);
-        globalExceptionValidator.validateId(userId);
-        grahamsModelRequestValidator.validateGrahamsModelById(valuationId);
-        grahamsModelRequestValidator.validateGrahamsModelForUser(valuationId, userId);
-
-        grahamsRepository.deleteById(valuationId);
-        log.info("Grahams valuation  with id number " + valuationId + " was deleted from DB successfully.");
-    }
+    private final CacheService cacheService;
 
     @Cacheable(value = "grahamsValuationsCache")
     public List<GrahamsModel> getAllGrahamsValuations() throws NoGrahamsModelFoundException {
@@ -106,7 +70,7 @@ public class GrahamsModelService {
 
         grahamsModelRequestValidator.validateGrahamsModelList(filteredCompaniesByTicker, ticker);
 
-        log.info("Found " + companiesValuations.size() + " Grahams company valuations with ticker: " + ticker);
+        log.info("Found " + filteredCompaniesByTicker.size() + " Grahams company valuations with ticker: " + ticker);
         return grahamsModelMappingService.mapToResponse(filteredCompaniesByTicker);
     }
 
@@ -142,5 +106,30 @@ public class GrahamsModelService {
         return grahamsModelMappingService.mapToResponse(filteredValuationsByDate);
     }
 
+    public List<GrahamsResponseDTO> addGrahamsValuation(final GrahamsRequestDTO grahamsRequestDTO, final Long userId) throws MandatoryFieldsMissingException, NotValidIdException, NoUsersFoundException {
+        globalExceptionValidator.validateId(userId);
+        userRequestValidator.validateUserById(userId);
+        grahamsModelRequestValidator.validateGrahamsModelRequest(grahamsRequestDTO);
+        final User user = userRepository.getReferenceById(userId);
 
+        final GrahamsModel grahamsModel = grahamsModelMappingService.mapToEntity(grahamsRequestDTO);
+        user.getGrahamsModels().add(grahamsModel);
+        grahamsModel.setUser(user);
+
+        cacheService.evictAllGrahamsValuationsCaches();
+        grahamsRepository.save(grahamsModel);
+        log.info("Calculation created successfully.");
+        return grahamsModelMappingService.mapToResponse(grahamsRepository.findByUserId(userId));
+    }
+
+    public void deleteGrahamsValuationById(final Long valuationId, final Long userId) throws NotValidIdException, NoGrahamsModelFoundException, ValuationDoestExistForSelectedUser {
+        globalExceptionValidator.validateId(valuationId);
+        globalExceptionValidator.validateId(userId);
+        grahamsModelRequestValidator.validateGrahamsModelById(valuationId);
+        grahamsModelRequestValidator.validateGrahamsModelForUser(valuationId, userId);
+
+        cacheService.evictAllGrahamsValuationsCaches();
+        grahamsRepository.deleteById(valuationId);
+        log.info("Grahams valuation  with id number " + valuationId + " was deleted from DB successfully.");
+    }
 }

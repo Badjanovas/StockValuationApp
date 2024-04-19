@@ -44,10 +44,10 @@ public class DividendDiscountController {
         return ResponseEntity.status(HttpStatus.OK).body(dividendDiscountService.addDividendDiscountValuation(dividendDiscountRequestDTO, userId));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteDividendDiscountById(@PathVariable final  Long id) throws NoDividendDiscountModelFoundException, NotValidIdException {
-        dividendDiscountService.deleteDividendDiscountValuationById(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Dividend discount valuation with id number " + id + " was deleted from DB successfully.");
+    @DeleteMapping("/{valuationId}/{userId}")
+    public ResponseEntity<?> deleteDividendDiscountById(@PathVariable final  Long valuationId, @PathVariable final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, ValuationDoestExistForSelectedUser {
+        dividendDiscountService.deleteDividendDiscountValuationById(valuationId, userId);
+        return ResponseEntity.status(HttpStatus.OK).body("Dividend discount valuation with id number " + valuationId + " was deleted from DB successfully.");
     }
 
 }
