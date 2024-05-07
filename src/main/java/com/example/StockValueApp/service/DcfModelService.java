@@ -13,13 +13,10 @@ import com.example.StockValueApp.validator.GlobalExceptionValidator;
 import com.example.StockValueApp.validator.UserRequestValidator;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,19 +74,19 @@ public class DcfModelService {
         return dcfModelMappingService.mapToResponse(filteredCompaniesByCompanyName);
     }
 
-    @Cacheable(value = "dcfValuationByDateCache", key = "#date.toString().concat('-').concat(#userId.toString())")
-    public List<DcfModelResponseDTO> getDcfValuationByDate(final LocalDate date, final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, NoUsersFoundException {
+    @Cacheable(value = "dcfValuationByDateRangeCache", key = "#startDate.toString().concat('-').concat(#endDate.toString()).concat('-').concat(#userId.toString())")
+    public List<DcfModelResponseDTO> getDcfValuationByDate(final LocalDate startDate, final LocalDate endDate, final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, NoUsersFoundException {
         globalExceptionValidator.validateId(userId);
         userRequestValidator.validateUserById(userId);
-        final List<DcfModel> companiesValuations = dcfModelRepository.findByUserId(userId);
+        final List<DcfModel> valuations = dcfModelRepository.findByUserId(userId);
 
-        final List<DcfModel> filteredValuationsByDate = companiesValuations.stream()
-                .filter(valuation -> valuation.getCreationDate().equals(date))
+        final List<DcfModel> filteredValuationsByDate = valuations.stream()
+                .filter(valuation -> valuation.getCreationDate().isAfter(startDate.minusDays(1)) &&  valuation.getCreationDate().isBefore(endDate.plusDays(1)))
                 .collect(Collectors.toList());
 
-        dcfRequestValidator.validateDcfModelList(filteredValuationsByDate, date);
+        dcfRequestValidator.validateDcfModelList(filteredValuationsByDate, startDate, endDate);
 
-        log.info("Found " + filteredValuationsByDate.size() + " Discounted cash flow valuations made at: " + date);
+        log.info("Found " + filteredValuationsByDate.size() + " Discounted cash flow valuations between: " + startDate + " and " + endDate);
         return dcfModelMappingService.mapToResponse(filteredValuationsByDate);
     }
 
@@ -108,7 +105,7 @@ public class DcfModelService {
         log.info("Calculation created successfully.");
         return dcfModelMappingService.mapToResponse(dcfModelRepository.findAll());
     }
-    public void deleteDcfValuationById(final Long valuationId, final Long userId) throws NotValidIdException, NoDcfValuationsFoundException, ValuationDoestExistForSelectedUser {
+    public void deleteDcfValuationById(final Long valuationId, final Long userId) throws NotValidIdException, NoDcfValuationsFoundException, ValuationDoestExistForSelectedUserException {
         globalExceptionValidator.validateId(valuationId);
         globalExceptionValidator.validateId(userId);
         dcfRequestValidator.validateDcfModelById(valuationId);

@@ -34,9 +34,9 @@ public class DcfModelController {
         return ResponseEntity.status(HttpStatus.OK).body(dcfModelService.getDcfValuationsByCompanyName(companyName, userId));
     }
 
-    @GetMapping("/date/{date}/{userId}")
-    public ResponseEntity<?> findByDate(@PathVariable("date") final LocalDate date, @PathVariable final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, NoUsersFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(dcfModelService.getDcfValuationByDate(date, userId));
+    @GetMapping("/date/{startDate}/{endDate}/{userId}")
+    public ResponseEntity<?> findByDate(@PathVariable("startDate") final LocalDate startDate, @PathVariable("endDate") final LocalDate endDate, @PathVariable final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, NoUsersFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(dcfModelService.getDcfValuationByDate(startDate, endDate, userId));
     }
 
     @PostMapping("/{userId}")
@@ -45,7 +45,7 @@ public class DcfModelController {
     }
 
     @DeleteMapping("/{dcfValuationId}/{userId}")
-    public ResponseEntity<?> deleteDcfValuationById(@PathVariable final Long dcfValuationId, @PathVariable final Long userId) throws NotValidIdException, NoDcfValuationsFoundException, ValuationDoestExistForSelectedUser {
+    public ResponseEntity<?> deleteDcfValuationById(@PathVariable final Long dcfValuationId, @PathVariable final Long userId) throws NotValidIdException, NoDcfValuationsFoundException, ValuationDoestExistForSelectedUserException {
         dcfModelService.deleteDcfValuationById(dcfValuationId, userId);
         return ResponseEntity.status(HttpStatus.OK).body("Discounted cash flow valuation with id number " + dcfValuationId + " was deleted from DB successfully.");
     }

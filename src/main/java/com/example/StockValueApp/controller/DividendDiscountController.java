@@ -34,9 +34,9 @@ public class DividendDiscountController {
         return ResponseEntity.status(HttpStatus.OK).body(dividendDiscountService.getDividendDiscountValuationsByCompanyName(companyName, userId));
     }
 
-    @GetMapping("/date/{date}/{userId}")
-    public ResponseEntity<?> findByDate(@PathVariable("date") final LocalDate date, final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, NoUsersFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(dividendDiscountService.getDividendDiscountValuationsByDate(date,userId));
+    @GetMapping("/date/{startDate}/{endDate}/{userId}")
+    public ResponseEntity<?> findByDate(@PathVariable("startDate") final LocalDate startDate, @PathVariable final LocalDate endDate , final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, NoUsersFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(dividendDiscountService.getDividendDiscountValuationsByDate(startDate, endDate, userId));
     }
 
     @PostMapping("/{userId}")
@@ -45,7 +45,7 @@ public class DividendDiscountController {
     }
 
     @DeleteMapping("/{valuationId}/{userId}")
-    public ResponseEntity<?> deleteDividendDiscountById(@PathVariable final  Long valuationId, @PathVariable final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, ValuationDoestExistForSelectedUser {
+    public ResponseEntity<?> deleteDividendDiscountById(@PathVariable final  Long valuationId, @PathVariable final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, ValuationDoestExistForSelectedUserException {
         dividendDiscountService.deleteDividendDiscountValuationById(valuationId, userId);
         return ResponseEntity.status(HttpStatus.OK).body("Dividend discount valuation with id number " + valuationId + " was deleted from DB successfully.");
     }

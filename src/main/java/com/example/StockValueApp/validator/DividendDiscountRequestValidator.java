@@ -3,7 +3,6 @@ package com.example.StockValueApp.validator;
 import com.example.StockValueApp.dto.DividendDiscountRequestDTO;
 import com.example.StockValueApp.exception.*;
 import com.example.StockValueApp.model.DividendDiscountModel;
-import com.example.StockValueApp.model.GrahamsModel;
 import com.example.StockValueApp.repository.DividendDiscountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,21 +36,21 @@ public class DividendDiscountRequestValidator {
             log.error("Mandatory company ticker field is empty.");
             throw new MandatoryFieldsMissingException("Mandatory company ticker field is empty.");
         } else if (dividendDiscountRequestDTO.getCurrentYearsDiv() == null) {
-            log.error("Mandatory currentYearsDiv field is empty.");
-            throw new MandatoryFieldsMissingException("Mandatory currentYearsDiv field is empty.");
+            log.error("Mandatory currentYearsDiv field is missing.");
+            throw new MandatoryFieldsMissingException("Mandatory currentYearsDiv field is missing.");
         } else if (dividendDiscountRequestDTO.getWacc() == null) {
-            log.error("Mandatory wacc field is empty.");
-            throw new MandatoryFieldsMissingException("Mandatory wacc field is empty.");
+            log.error("Mandatory wacc field is missing.");
+            throw new MandatoryFieldsMissingException("Mandatory wacc field is missing.");
         } else if (dividendDiscountRequestDTO.getExpectedGrowthRate() == null) {
-            log.error("Mandatory expectedGrowthRate field is empty.");
-            throw new MandatoryFieldsMissingException("Mandatory expectedGrowthRate field is empty.");
+            log.error("Mandatory expectedGrowthRate field is missing.");
+            throw new MandatoryFieldsMissingException("Mandatory expectedGrowthRate field is missing.");
         }
     }
 
     public void validateDividendDiscountList(final List<DividendDiscountModel> dividendDiscountModels) throws NoDividendDiscountModelFoundException {
         if (dividendDiscountModels.isEmpty()){
-            log.error("No dividend discount valuations found for: ");
-            throw new NoDividendDiscountModelFoundException("No dividend discount valuations found for: ");
+            log.error("No dividend discount valuations found.");
+            throw new NoDividendDiscountModelFoundException("No dividend discount valuations found.");
         }
     }
 
@@ -62,10 +61,10 @@ public class DividendDiscountRequestValidator {
         }
     }
 
-    public void validateDividendDiscountList(final List<DividendDiscountModel> dividendDiscountModels, LocalDate date) throws NoDividendDiscountModelFoundException {
+    public void validateDividendDiscountList(final List<DividendDiscountModel> dividendDiscountModels,final LocalDate startDate, final LocalDate endDate) throws NoDividendDiscountModelFoundException {
         if (dividendDiscountModels.isEmpty()){
-            log.error("There are no valuations made in " + date);
-            throw new NoDividendDiscountModelFoundException("There are no valuations made in " + date);
+            log.error("There are no valuations made between " + startDate + " and " + endDate);
+            throw new NoDividendDiscountModelFoundException("There are no valuations made between " + startDate + " end " + endDate);
         }
     }
 
@@ -83,11 +82,11 @@ public class DividendDiscountRequestValidator {
         }
     }
 
-    public void validateDividendDiscountModelForUser(final Long valuationId, final Long userId) throws ValuationDoestExistForSelectedUser {
+    public void validateDividendDiscountModelForUser(final Long valuationId, final Long userId) throws ValuationDoestExistForSelectedUserException {
         Optional<DividendDiscountModel> valuation = dividendDiscountRepository.findById(valuationId);
         if (!valuation.isPresent() || !valuation.get().getUser().getId().equals(userId)){
             log.error("Valuation does not exist for this user");
-            throw new ValuationDoestExistForSelectedUser("Valuation does not exist for this user");
+            throw new ValuationDoestExistForSelectedUserException("Valuation does not exist for this user");
         }
     }
 

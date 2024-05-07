@@ -23,7 +23,7 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> addUser(@RequestBody final UserRequestDTO userRequestDTO) throws MandatoryFieldsMissingException, UserAlreadyExist, IncorrectEmailFormatException, EmailAlreadyExist, NotValidIdException {
+    public ResponseEntity<?> addUser(@RequestBody final UserRequestDTO userRequestDTO) throws MandatoryFieldsMissingException, UserAlreadyExistException, IncorrectEmailFormatException, EmailAlreadyExistException, NotValidIdException {
         return ResponseEntity.status(HttpStatus.OK).body(userService.addUser(userRequestDTO));
     }
 
@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @PutMapping("/update/{userName}")
-    public ResponseEntity<?> updateUser(@PathVariable final String userName, @RequestBody final UserRequestDTO user) throws NoUsersFoundException, UserAlreadyExist, EmailAlreadyExist, IncorrectEmailFormatException, MandatoryFieldsMissingException {
+    public ResponseEntity<?> updateUser(@PathVariable final String userName, @RequestBody final UserRequestDTO user) throws NoUsersFoundException, UserAlreadyExistException, EmailAlreadyExistException, IncorrectEmailFormatException, MandatoryFieldsMissingException {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserByUserName(userName, user));
     }
 

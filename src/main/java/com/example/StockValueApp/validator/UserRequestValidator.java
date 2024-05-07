@@ -58,23 +58,13 @@ public class UserRequestValidator {
         }
     }
 
-    // Checks if the provided user's username already exists in the system.
-    public void validateUserName(final UserRequestDTO userRequestDTO) throws UserAlreadyExist {
-        Optional<User> user = userRepository.findByUserName(userRequestDTO.getUserName());
+    // Checks if the provided users username already exists in the system.
+    public void validateUserName(final UserRequestDTO userRequestDTO) throws UserAlreadyExistException {
+        final Optional<User> user = userRepository.findByUserName(userRequestDTO.getUserName());
 
         if (user.isPresent()) {
             log.error("User with username: " + userRequestDTO.getUserName() + " already exist. Choose different user name.");
-            throw new UserAlreadyExist("User with username: " + userRequestDTO.getUserName() + " already exist. Choose different user name.");
-        }
-    }
-
-    // Checks if a user with the specified userName exists in the database
-    public void validateUserByUserName(final String userName) throws NoUsersFoundException {
-        Optional<User> user = userRepository.findByUserName(userName);
-
-        if (!user.isPresent()) {
-            log.error("User with username: " + userName + " doesn't exist.");
-            throw new NoUsersFoundException("User with username: " + userName + " doesn't exist.");
+            throw new UserAlreadyExistException("User with username: " + userRequestDTO.getUserName() + " already exist. Choose different user name.");
         }
     }
 
@@ -88,10 +78,10 @@ public class UserRequestValidator {
         }
     }
 
-    public void validateEmail(final UserRequestDTO userRequestDTO) throws EmailAlreadyExist {
+    public void validateEmail(final UserRequestDTO userRequestDTO) throws EmailAlreadyExistException {
         if (userRepository.findByEmail(userRequestDTO.getEmail()).isPresent()){
             log.error("User with email address " + userRequestDTO.getEmail() + " already exist.");
-            throw new EmailAlreadyExist("User with email address " + userRequestDTO.getEmail() + " already exist.");
+            throw new EmailAlreadyExistException("User with email address " + userRequestDTO.getEmail() + " already exist.");
         }
     }
 

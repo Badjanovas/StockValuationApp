@@ -75,20 +75,20 @@ public class DividendDiscountService {
         return dividendDiscountMappingService.mapToResponse(filteredCompaniesByCompanyName);
     }
 
-    @Cacheable(value = "dividendDiscountValuationsByDateCache", key = "#date.toString().concat('-').concat(#userId.toString())")
-    public List<DividendDiscountResponseDTO> getDividendDiscountValuationsByDate(final LocalDate date, final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, NoUsersFoundException {
+    @Cacheable(value = "dividendDiscountValuationsByDateCache", key = "#startDate.toString().concat('-').concat(#endDate.toString()).concat('-').concat(#userId.toString())")
+    public List<DividendDiscountResponseDTO> getDividendDiscountValuationsByDate(final LocalDate startDate, final LocalDate endDate, final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, NoUsersFoundException {
         globalExceptionValidator.validateId(userId);
         userRequestValidator.validateUserById(userId);
 
         final List<DividendDiscountModel> companiesValuations = dividendDiscountRepository.findByUserId(userId);
 
         final List<DividendDiscountModel> filteredCompaniesByDate = companiesValuations.stream()
-                .filter(valuation -> valuation.getCreationDate().equals(date))
+                .filter(valuation -> valuation.getCreationDate().isAfter(startDate.minusDays(1)) && valuation.getCreationDate().isBefore(endDate.plusDays(1)))
                 .collect(Collectors.toList());
 
-        dividendDiscountRequestValidator.validateDividendDiscountList(filteredCompaniesByDate, date);
+        dividendDiscountRequestValidator.validateDividendDiscountList(filteredCompaniesByDate, startDate, endDate);
 
-        log.info("Found " + filteredCompaniesByDate.size() + " Dividend discount valuations made at: " + date);
+        log.info("Found " + filteredCompaniesByDate.size() + " Dividend discount valuations between: " + startDate + " and " + endDate);
         return dividendDiscountMappingService.mapToResponse(filteredCompaniesByDate);
     }
 
@@ -109,7 +109,7 @@ public class DividendDiscountService {
         return dividendDiscountMappingService.mapToResponse(dividendDiscountRepository.findByUserId(userId));
     }
 
-    public void deleteDividendDiscountValuationById(final Long valuationId, final Long userId) throws NotValidIdException, NoDividendDiscountModelFoundException, ValuationDoestExistForSelectedUser {
+    public void deleteDividendDiscountValuationById(final Long valuationId, final Long userId) throws NotValidIdException, NoDividendDiscountModelFoundException, ValuationDoestExistForSelectedUserException {
         globalExceptionValidator.validateId(valuationId);
         globalExceptionValidator.validateId(userId);
         dividendDiscountRequestValidator.validateDividendDiscountById(valuationId);

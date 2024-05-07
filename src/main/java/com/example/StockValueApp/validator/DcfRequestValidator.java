@@ -4,9 +4,8 @@ import com.example.StockValueApp.dto.DcfModelRequestDTO;
 import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
 import com.example.StockValueApp.exception.NoDcfValuationsFoundException;
 import com.example.StockValueApp.exception.NoGrahamsModelFoundException;
-import com.example.StockValueApp.exception.ValuationDoestExistForSelectedUser;
+import com.example.StockValueApp.exception.ValuationDoestExistForSelectedUserException;
 import com.example.StockValueApp.model.DcfModel;
-import com.example.StockValueApp.model.GrahamsModel;
 import com.example.StockValueApp.repository.DcfModelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,10 +67,10 @@ public class DcfRequestValidator {
         }
     }
 
-    public void validateDcfModelList(final List<DcfModel> valuationList, LocalDate date) throws NoGrahamsModelFoundException {
+    public void validateDcfModelList(final List<DcfModel> valuationList, final LocalDate startDate, final LocalDate endDate ) throws NoGrahamsModelFoundException {
         if (valuationList.isEmpty()){
-            log.error("There are no valuations made in " + date);
-            throw new NoGrahamsModelFoundException("There are no valuations made in " + date);
+            log.error("There are no valuations made between " + startDate + " " + endDate);
+            throw new NoGrahamsModelFoundException("There are no valuations made between " + startDate + " " + endDate);
         }
     }
 
@@ -82,11 +81,11 @@ public class DcfRequestValidator {
         }
     }
 
-    public void validateDcfModelForUser(final Long valuationId, final Long userId) throws ValuationDoestExistForSelectedUser {
+    public void validateDcfModelForUser(final Long valuationId, final Long userId) throws ValuationDoestExistForSelectedUserException {
         Optional<DcfModel> valuation = dcfModelRepository.findById(valuationId);
         if (valuation.isEmpty() || !valuation.get().getUser().getId().equals(userId)){
             log.error("Valuation does not exist for this user");
-            throw new ValuationDoestExistForSelectedUser("Valuation does not exist for this user");
+            throw new ValuationDoestExistForSelectedUserException("Valuation does not exist for this user");
         }
     }
 

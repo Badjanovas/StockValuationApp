@@ -65,4 +65,16 @@ public class DcfModel implements Serializable {
         this.sharesOutstanding = sharesOutstanding;
         this.user = user;
     }
+
+    public DcfModel(String companyName, String ticker, Double sumOfFCF, Double cashAndCashEquivalents, Double totalDebt, Double sharesOutstanding, Double equityValue, Double intrinsicValue, User user) {
+        this.companyName = companyName;
+        this.ticker = ticker;
+        this.sumOfFCF = sumOfFCF;
+        this.cashAndCashEquivalents = cashAndCashEquivalents;
+        this.totalDebt = totalDebt;
+        this.sharesOutstanding = sharesOutstanding;
+        this.equityValue = equityValue;
+        this.intrinsicValue = intrinsicValue;
+        this.user = user;
+    }
 }

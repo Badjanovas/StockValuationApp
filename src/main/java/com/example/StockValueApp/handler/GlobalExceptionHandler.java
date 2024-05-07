@@ -2,7 +2,7 @@ package com.example.StockValueApp.handler;
 
 import com.example.StockValueApp.exception.MandatoryFieldsMissingException;
 import com.example.StockValueApp.exception.NotValidIdException;
-import com.example.StockValueApp.exception.ValuationDoestExistForSelectedUser;
+import com.example.StockValueApp.exception.ValuationDoestExistForSelectedUserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,8 +37,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>("The provided input is not a valid number.", HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(ValuationDoestExistForSelectedUser.class)
-    public ResponseEntity<Object> handleValuationDoestExistForSelectedUser(ValuationDoestExistForSelectedUser e){
+    @ExceptionHandler(ValuationDoestExistForSelectedUserException.class)
+    public ResponseEntity<Object> handleValuationDoestExistForSelectedUser(ValuationDoestExistForSelectedUserException e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 

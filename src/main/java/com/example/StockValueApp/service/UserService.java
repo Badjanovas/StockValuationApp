@@ -34,7 +34,8 @@ public class UserService {
         return users;
     }
 
-    public List<UserResponseDTO> addUser(final UserRequestDTO userRequestDTO) throws MandatoryFieldsMissingException, UserAlreadyExist, IncorrectEmailFormatException, EmailAlreadyExist, NotValidIdException {
+    // returnus susitvarkyti. cia turbut voido uztenka
+    public List<UserResponseDTO> addUser(final UserRequestDTO userRequestDTO) throws MandatoryFieldsMissingException, UserAlreadyExistException, IncorrectEmailFormatException, EmailAlreadyExistException, NotValidIdException {
         userRequestValidator.validateUserName(userRequestDTO);
         userRequestValidator.validateUserRequest(userRequestDTO);
         userRequestValidator.validateEmailFormat(userRequestDTO.getEmail());
@@ -48,6 +49,7 @@ public class UserService {
         return userMappingService.mapToResponse(userRepository.findAll());
     }
 
+    //manau ir cia voido uzteks
     public List<UserResponseDTO> deleteUserById(final Long id) throws NotValidIdException, NoUsersFoundException {
         globalExceptionValidator.validateId(id);
         userRequestValidator.validateUserById(id);
@@ -59,7 +61,7 @@ public class UserService {
 
     // Noriu padaryti kad kiekvienas useris turetu galimybe pasikeisti userName, password ir email.
     // apsvarstyti isskirstyma i atskirus metodus?
-    public User updateUserByUserName(final String userName, final UserRequestDTO user) throws NoUsersFoundException, UserAlreadyExist, EmailAlreadyExist, IncorrectEmailFormatException, MandatoryFieldsMissingException {
+    public User updateUserByUserName(final String userName, final UserRequestDTO user) throws NoUsersFoundException, UserAlreadyExistException, EmailAlreadyExistException, IncorrectEmailFormatException, MandatoryFieldsMissingException {
         userRequestValidator.validateUserRequest(user);
         User userToUpdate = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new NoUsersFoundException("User with username: " + userName + " was not found."));

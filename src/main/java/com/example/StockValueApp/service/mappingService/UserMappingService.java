@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public class UserMappingService {
 
-    public User mapToEntity(final UserRequestDTO requestDTO){
+    public User mapToEntity(final UserRequestDTO requestDTO) {
         return User.builder()
                 .userName(requestDTO.getUserName())
                 .password(requestDTO.getPassword())
@@ -19,14 +19,16 @@ public class UserMappingService {
                 .build();
     }
 
-    public List<UserResponseDTO> mapToResponse(List<User> allUsers){
+    public List<UserResponseDTO> mapToResponse(List<User> allUsers) {
         List<UserResponseDTO> mappedUsers = new ArrayList<>();
         for (User user : allUsers) {
-            UserResponseDTO dto = new UserResponseDTO();
-            dto.setId(user.getId());
-            dto.setCreationDate(user.getCreationDate());
-            dto.setUserName(user.getUserName());
-            dto.setEmail(user.getEmail());
+            UserResponseDTO dto = UserResponseDTO.builder()
+                    .id(user.getId())
+                    .creationDate(user.getCreationDate())
+                    .userName(user.getUserName())
+                    .email(user.getEmail())
+                    .build();
+
             mappedUsers.add(dto);
         }
         return mappedUsers;

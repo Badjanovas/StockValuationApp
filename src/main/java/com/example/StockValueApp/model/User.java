@@ -57,4 +57,6 @@ public class User implements Serializable {
         this.dcfModels = new ArrayList<>();
         this.dividendDiscountModels = new ArrayList<>();
     }
+
+
 }

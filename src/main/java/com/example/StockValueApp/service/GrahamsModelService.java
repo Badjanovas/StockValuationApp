@@ -8,29 +8,16 @@ import com.example.StockValueApp.model.User;
 import com.example.StockValueApp.repository.GrahamsModelRepository;
 import com.example.StockValueApp.repository.UserRepository;
 import com.example.StockValueApp.service.mappingService.GrahamsModelMappingService;
-import com.example.StockValueApp.util.CacheConfig;
 import com.example.StockValueApp.validator.GlobalExceptionValidator;
 import com.example.StockValueApp.validator.GrahamsModelRequestValidator;
 import com.example.StockValueApp.validator.UserRequestValidator;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.Data;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -90,19 +77,19 @@ public class GrahamsModelService {
         return grahamsModelMappingService.mapToResponse(filteredCompaniesByCompanyName);
     }
 
-    @Cacheable(value = "grahamsValuationsByDateCache", key = "#date.toString().concat('-').concat(#userId.toString())")
-    public List<GrahamsResponseDTO> getGrahamsValuationsByDate(final LocalDate date, final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, NoUsersFoundException {
+    @Cacheable(value = "grahamsValuationsByDateCache", key = "#startDate.toString().concat('-').concat(#endDate.toString()).concat('-').concat(#userId.toString())")
+    public List<GrahamsResponseDTO> getGrahamsValuationsByDate(final LocalDate startDate, final LocalDate endDate, final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, NoUsersFoundException {
         globalExceptionValidator.validateId(userId);
         userRequestValidator.validateUserById(userId);
         final List<GrahamsModel> companiesValuations = grahamsRepository.findByUserId(userId);
 
         final List<GrahamsModel> filteredValuationsByDate = companiesValuations.stream()
-                .filter(valuation -> valuation.getCreationDate().equals(date))
+                .filter(valuation -> valuation.getCreationDate().isAfter(startDate.minusDays(1)) && valuation.getCreationDate().isBefore(endDate.plusDays(1)))
                 .collect(Collectors.toList());
 
-        grahamsModelRequestValidator.validateGrahamsModelList(filteredValuationsByDate, date);
+        grahamsModelRequestValidator.validateGrahamsModelList(filteredValuationsByDate, startDate, endDate);
 
-        log.info("Found " + filteredValuationsByDate.size() + " Grahams valuations made at: " + date);
+        log.info("Found " + filteredValuationsByDate.size() + " Grahams valuations made between: " + startDate + " and " + endDate);
         return grahamsModelMappingService.mapToResponse(filteredValuationsByDate);
     }
 
@@ -122,7 +109,7 @@ public class GrahamsModelService {
         return grahamsModelMappingService.mapToResponse(grahamsRepository.findByUserId(userId));
     }
 
-    public void deleteGrahamsValuationById(final Long valuationId, final Long userId) throws NotValidIdException, NoGrahamsModelFoundException, ValuationDoestExistForSelectedUser {
+    public void deleteGrahamsValuationById(final Long valuationId, final Long userId) throws NotValidIdException, NoGrahamsModelFoundException, ValuationDoestExistForSelectedUserException {
         globalExceptionValidator.validateId(valuationId);
         globalExceptionValidator.validateId(userId);
         grahamsModelRequestValidator.validateGrahamsModelById(valuationId);

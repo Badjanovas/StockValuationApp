@@ -34,9 +34,9 @@ public class GrahamsModelController {
         return ResponseEntity.status(HttpStatus.OK).body(grahamsModelService.getGrahamsValuationsByCompanyName(companyName, userId));
     }
 
-    @GetMapping("/date/{date}/{userId}")
-    public ResponseEntity<?> findByCreationDate(@PathVariable("date") final LocalDate date, @PathVariable final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, NoUsersFoundException {
-        return ResponseEntity.status(HttpStatus.OK).body(grahamsModelService.getGrahamsValuationsByDate(date, userId));
+    @GetMapping("/date/{startDate}/{endDate}/{userId}")
+    public ResponseEntity<?> findByCreationDate(@PathVariable("startDate") final LocalDate startDate, @PathVariable LocalDate endDate, @PathVariable final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, NoUsersFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(grahamsModelService.getGrahamsValuationsByDate(startDate, endDate, userId));
     }
 
     @PostMapping("/{userId}")
@@ -45,7 +45,7 @@ public class GrahamsModelController {
     }
 
     @DeleteMapping("/{grahamsValuationId}/{userId}")
-    public ResponseEntity<?> deleteGrahamsModel(@PathVariable final Long grahamsValuationId,@PathVariable final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, ValuationDoestExistForSelectedUser, NoUsersFoundException {
+    public ResponseEntity<?> deleteGrahamsModel(@PathVariable final Long grahamsValuationId,@PathVariable final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, ValuationDoestExistForSelectedUserException, NoUsersFoundException {
         grahamsModelService.deleteGrahamsValuationById(grahamsValuationId, userId);
         return ResponseEntity.status(HttpStatus.OK).body("Grahams valuation  with id number " + grahamsValuationId + " was deleted from DB successfully.");
     }

@@ -62,4 +62,14 @@ public class GrahamsModel implements Serializable {
         this.currentYieldOfBonds = currentYieldOfBonds;
         this.user = user;
     }
+
+    public GrahamsModel(String name, String ticker, Double eps, Double growthRate, Double currentYieldOfBonds, Double intrinsicValue, User user) {
+        this.name = name;
+        this.ticker = ticker;
+        this.eps = eps;
+        this.growthRate = growthRate;
+        this.currentYieldOfBonds = currentYieldOfBonds;
+        this.intrinsicValue = intrinsicValue;
+        this.user = user;
+    }
 }

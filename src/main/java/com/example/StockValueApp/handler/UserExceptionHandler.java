@@ -15,8 +15,8 @@ public class UserExceptionHandler {
     public ResponseEntity<Object> handleNoUsersFoundException(NoUsersFoundException e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
-    @ExceptionHandler(UserAlreadyExist.class)
-    public ResponseEntity<Object> handleUserAlreadyExistException(UserAlreadyExist e){
+    @ExceptionHandler(UserAlreadyExistException.class)
+    public ResponseEntity<Object> handleUserAlreadyExistException(UserAlreadyExistException e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
 
@@ -25,8 +25,8 @@ public class UserExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(EmailAlreadyExist.class)
-    public ResponseEntity<Object> emailAlreadyExist(EmailAlreadyExist e){
+    @ExceptionHandler(EmailAlreadyExistException.class)
+    public ResponseEntity<Object> emailAlreadyExist(EmailAlreadyExistException e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
 }

@@ -61,4 +61,14 @@ public class DividendDiscountModel implements Serializable {
         this.expectedGrowthRate = expectedGrowthRate;
         this.user = user;
     }
+
+    public DividendDiscountModel(String companyName, String ticker, Double valueOfNextYearsDiv, Double wacc, Double expectedGrowthRate, Double intrinsicValue, User user) {
+        this.companyName = companyName;
+        this.ticker = ticker;
+        this.valueOfNextYearsDiv = valueOfNextYearsDiv;
+        this.wacc = wacc;
+        this.expectedGrowthRate = expectedGrowthRate;
+        this.intrinsicValue = intrinsicValue;
+        this.user = user;
+    }
 }
