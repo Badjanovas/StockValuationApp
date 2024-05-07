@@ -39,17 +39,17 @@ public class DcfRequestValidator {
             log.error("Mandatory company ticker field is empty.");
             throw new MandatoryFieldsMissingException("Mandatory company ticker field is empty.");
         } else if (dcfModelRequestDTO.getSumOfFCF() == null) {
-            log.error("Mandatory sumOfFCF field is empty.");
-            throw new MandatoryFieldsMissingException("Mandatory sumOfFCF field is empty.");
+            log.error("Mandatory sumOfFCF field is missing.");
+            throw new MandatoryFieldsMissingException("Mandatory sumOfFCF field is missing.");
         } else if (dcfModelRequestDTO.getCashAndCashEquivalents() == null) {
-            log.error("Mandatory cashAndCashEquivalents field is empty.");
-            throw new MandatoryFieldsMissingException("Mandatory cashAndCashEquivalents field is empty.");
+            log.error("Mandatory cashAndCashEquivalents field is missing.");
+            throw new MandatoryFieldsMissingException("Mandatory cashAndCashEquivalents field is missing.");
         } else if (dcfModelRequestDTO.getTotalDebt() == null) {
-            log.error("Mandatory totalDebt field is empty.");
-            throw new MandatoryFieldsMissingException("Mandatory totalDebt field is empty.");
+            log.error("Mandatory totalDebt field is missing.");
+            throw new MandatoryFieldsMissingException("Mandatory totalDebt field is missing.");
         } else if (dcfModelRequestDTO.getSharesOutstanding() == null) {
-            log.error("Mandatory sharesOutstanding field is empty.");
-            throw new MandatoryFieldsMissingException("Mandatory sharesOutstanding field is empty.");
+            log.error("Mandatory sharesOutstanding field is missing.");
+            throw new MandatoryFieldsMissingException("Mandatory sharesOutstanding field is missing.");
         }
     }
 
