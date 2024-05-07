@@ -44,7 +44,7 @@ public class UserService {
         final User user = userMappingService.mapToEntity(userRequestDTO);
         userRepository.save(user);
         globalExceptionValidator.validateId(user.getId());
-        emailSendingService.sendEmail(userRequestDTO.getEmail());
+        emailSendingService.sendEmail(userRequestDTO.getEmail(), userRequestDTO);
         log.info("New user " + user.getUserName() + " was created and saved successfully.");
         return userMappingService.mapToResponse(userRepository.findAll());
     }
