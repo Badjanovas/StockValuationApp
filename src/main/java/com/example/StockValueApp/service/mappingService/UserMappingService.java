@@ -25,7 +25,7 @@ public class UserMappingService {
             UserResponseDTO dto = UserResponseDTO.builder()
                     .id(user.getId())
                     .creationDate(user.getCreationDate())
-                    .userName(user.getUserName())
+                    .userName(user.getUsername())
                     .email(user.getEmail())
                     .build();
 

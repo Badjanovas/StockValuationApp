@@ -1,4 +1,4 @@
-package com.example.StockValueApp.util;
+package com.example.StockValueApp.config;
 
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;

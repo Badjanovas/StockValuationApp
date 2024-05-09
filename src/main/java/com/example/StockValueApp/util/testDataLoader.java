@@ -1,4 +1,5 @@
 package com.example.StockValueApp.util;
+
 import com.example.StockValueApp.dto.DcfModelRequestDTO;
 import com.example.StockValueApp.dto.DividendDiscountRequestDTO;
 import com.example.StockValueApp.dto.GrahamsRequestDTO;
@@ -14,10 +15,18 @@ import com.example.StockValueApp.service.GrahamsModelService;
 import com.example.StockValueApp.service.mappingService.DcfModelMappingService;
 import com.example.StockValueApp.service.mappingService.DividendDiscountMappingService;
 import com.example.StockValueApp.service.mappingService.GrahamsModelMappingService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 
 @Component
 @RequiredArgsConstructor
@@ -43,28 +52,25 @@ public class testDataLoader implements CommandLineRunner {
         User user3 = new User("Paulius", "paulius123", "fake@hotmail.com");
         User user4 = new User("kastytis", "sitytsak", "blablabla@gmail.com");
 
-        GrahamsRequestDTO userInput = new GrahamsRequestDTO("Alibaba","baba",6.43,10.0,5.06);
+        GrahamsRequestDTO userInput = new GrahamsRequestDTO("Alibaba", "baba", 6.43, 10.0, 5.06);
         GrahamsModel calculation1 = grahamsModelMappingService.mapToEntity(userInput);
         user1.getGrahamsModels().add(calculation1);
         calculation1.setUser(user1);
 
         GrahamsRequestDTO apple = new GrahamsRequestDTO("Apple", "aapl", 6.43, 12.0, 5.09);
-        GrahamsModel appleCalculation =  grahamsModelMappingService.mapToEntity(apple);
+        GrahamsModel appleCalculation = grahamsModelMappingService.mapToEntity(apple);
         user2.getGrahamsModels().add(appleCalculation);
         appleCalculation.setUser(user2);
 
-        DcfModelRequestDTO starbuks = new DcfModelRequestDTO("Starbuks", "sbux", 71250.0,3380.00,  22400.46,1130.0);
+        DcfModelRequestDTO starbuks = new DcfModelRequestDTO("Starbuks", "sbux", 71250.0, 3380.00, 22400.46, 1130.0);
         DcfModel starbuksCalculation = dcfModelMappingService.mapToEntity(starbuks);
         user2.getDcfModels().add(starbuksCalculation);
         starbuksCalculation.setUser(user2);
 
-        DividendDiscountRequestDTO nestle = new DividendDiscountRequestDTO("Nestle", "nesn.sw", 3.41,5.69, 3.5);
+        DividendDiscountRequestDTO nestle = new DividendDiscountRequestDTO("Nestle", "nesn.sw", 3.41, 5.69, 3.5);
         DividendDiscountModel nestleCalculation = dividendDiscountMappingService.mapToEntity(nestle);
         user2.getDividendDiscountModels().add(nestleCalculation);
         nestleCalculation.setUser(user2);
-
-
-
 
 
         DcfModelRequestDTO userInput2 = new DcfModelRequestDTO("PayPal", "pypl", 81817.0, 21540.0, 61115.0, 1070.0);
@@ -98,7 +104,6 @@ public class testDataLoader implements CommandLineRunner {
         calculation7.setUser(user2);
 
 
-
         userRepository.save(user1);
         userRepository.save(user2);
         userRepository.save(user3);
@@ -111,5 +116,8 @@ public class testDataLoader implements CommandLineRunner {
         System.out.println(starbuksCalculation.getIntrinsicValue() + " starbuks value should be 46.22");
         System.out.println(nestleCalculation.getIntrinsicValue() + " nestle value should be 161.16");
 
+
     }
+
 }
+

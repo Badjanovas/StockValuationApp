@@ -1,4 +1,4 @@
-package com.example.StockValueApp.util;
+package com.example.StockValueApp.config;
 
 
 import io.swagger.v3.oas.models.OpenAPI;

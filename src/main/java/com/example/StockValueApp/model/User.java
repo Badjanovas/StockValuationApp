@@ -5,19 +5,22 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-@Entity(name = "userName")
-@Getter
-@Setter
+@Entity
+@Table(name = "user_name")
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User implements Serializable {
+public class User implements Serializable, UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,6 +52,7 @@ public class User implements Serializable {
     @JsonManagedReference
     private List<DividendDiscountModel> dividendDiscountModels;
 
+
     public User(String userName, String password, String email) {
         this.userName = userName;
         this.password = password;
@@ -59,4 +63,33 @@ public class User implements Serializable {
     }
 
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return userName;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

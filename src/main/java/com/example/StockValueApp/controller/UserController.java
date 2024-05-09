@@ -2,6 +2,8 @@ package com.example.StockValueApp.controller;
 
 import com.example.StockValueApp.dto.UserRequestDTO;
 import com.example.StockValueApp.exception.*;
+import com.example.StockValueApp.model.AuthenticationRequest;
+import com.example.StockValueApp.model.AuthenticationResponse;
 import com.example.StockValueApp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +26,7 @@ public class UserController {
 
     @PostMapping("/")
     public ResponseEntity<?> addUser(@RequestBody final UserRequestDTO userRequestDTO) throws MandatoryFieldsMissingException, UserAlreadyExistException, IncorrectEmailFormatException, EmailAlreadyExistException, NotValidIdException {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.addUser(userRequestDTO));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.register(userRequestDTO));
     }
 
     @DeleteMapping("/{userId}")
@@ -35,6 +37,16 @@ public class UserController {
     @PutMapping("/update/{userName}")
     public ResponseEntity<?> updateUser(@PathVariable final String userName, @RequestBody final UserRequestDTO user) throws NoUsersFoundException, UserAlreadyExistException, EmailAlreadyExistException, IncorrectEmailFormatException, MandatoryFieldsMissingException {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserByUserName(userName, user));
+    }
+
+    @PostMapping("/authenticate")
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) throws MandatoryFieldsMissingException {
+        return ResponseEntity.ok(userService.authenticate(request));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody UserRequestDTO request) throws UserAlreadyExistException, IncorrectEmailFormatException, NotValidIdException, MandatoryFieldsMissingException, EmailAlreadyExistException {
+        return ResponseEntity.ok(userService.register(request));
     }
 
 }

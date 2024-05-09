@@ -3,13 +3,19 @@ package com.example.StockValueApp.service;
 import com.example.StockValueApp.dto.UserRequestDTO;
 import com.example.StockValueApp.dto.UserResponseDTO;
 import com.example.StockValueApp.exception.*;
+import com.example.StockValueApp.model.AuthenticationRequest;
+import com.example.StockValueApp.model.AuthenticationResponse;
 import com.example.StockValueApp.model.User;
 import com.example.StockValueApp.repository.UserRepository;
 import com.example.StockValueApp.service.mappingService.UserMappingService;
+import com.example.StockValueApp.validator.AuthenticationRequestValidator;
 import com.example.StockValueApp.validator.GlobalExceptionValidator;
 import com.example.StockValueApp.validator.UserRequestValidator;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +31,11 @@ public class UserService {
     private final UserRequestValidator userRequestValidator;
     private final GlobalExceptionValidator globalExceptionValidator;
     private final EmailSendingService emailSendingService;
+    private final UserMappingService mappingService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+    private final AuthenticationRequestValidator authenticationRequestValidator;
 
     public List<User> getAllUsers() throws NoUsersFoundException {
         log.info("Looking for users in DB.");
@@ -34,19 +45,37 @@ public class UserService {
         return users;
     }
 
-    // returnus susitvarkyti. cia turbut voido uztenka
-    public List<UserResponseDTO> addUser(final UserRequestDTO userRequestDTO) throws MandatoryFieldsMissingException, UserAlreadyExistException, IncorrectEmailFormatException, EmailAlreadyExistException, NotValidIdException {
+    public AuthenticationResponse register(final UserRequestDTO userRequestDTO) throws MandatoryFieldsMissingException, UserAlreadyExistException, IncorrectEmailFormatException, EmailAlreadyExistException, NotValidIdException {
         userRequestValidator.validateUserName(userRequestDTO);
         userRequestValidator.validateUserRequest(userRequestDTO);
         userRequestValidator.validateEmailFormat(userRequestDTO.getEmail());
         userRequestValidator.validateEmail(userRequestDTO);
 
         final User user = userMappingService.mapToEntity(userRequestDTO);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
+        var jwtToken = jwtService.generateToken(user);
         globalExceptionValidator.validateId(user.getId());
         emailSendingService.sendEmail(userRequestDTO.getEmail(), userRequestDTO);
-        log.info("New user " + user.getUserName() + " was created and saved successfully.");
-        return userMappingService.mapToResponse(userRepository.findAll());
+        log.info("New user " + user.getUsername()+ " was created and saved successfully.");
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
+    }
+
+    public AuthenticationResponse authenticate(AuthenticationRequest request) throws MandatoryFieldsMissingException {
+       authenticationRequestValidator.validateAuthenticationRequest(request);
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUserName(),
+                        request.getPassword()
+                )
+        );
+        var user = userRepository.findByUserName(request.getUserName()).orElseThrow();
+        var jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
     }
 
     //manau ir cia voido uzteks
@@ -73,7 +102,7 @@ public class UserService {
         final boolean isUpdated = updateUserIfChanged(user, userToUpdate);
         if (isUpdated) {
             userRepository.save(userToUpdate);
-            log.info("User " + userToUpdate.getUserName() + " was updated successfully.");
+            log.info("User " + userToUpdate.getUsername() + " was updated successfully.");
         }
 
         return userToUpdate;
@@ -82,7 +111,7 @@ public class UserService {
     private boolean updateUserIfChanged(final UserRequestDTO user, final User userToUpdate) {
         boolean isUpdated = false;
 
-        if (!Objects.equals(userToUpdate.getUserName(), user.getUserName())) {
+        if (!Objects.equals(userToUpdate.getUsername(), user.getUserName())) {
             userToUpdate.setUserName(user.getUserName());
             isUpdated = true;
         }
