@@ -1,5 +1,6 @@
 package com.example.StockValueApp.service;
 
+import com.example.StockValueApp.config.UserDetailsConfig;
 import com.example.StockValueApp.dto.UserRequestDTO;
 import com.example.StockValueApp.dto.UserResponseDTO;
 import com.example.StockValueApp.exception.*;
@@ -15,6 +16,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +33,6 @@ public class UserService {
     private final UserRequestValidator userRequestValidator;
     private final GlobalExceptionValidator globalExceptionValidator;
     private final EmailSendingService emailSendingService;
-    private final UserMappingService mappingService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -57,21 +58,24 @@ public class UserService {
         var jwtToken = jwtService.generateToken(user);
         globalExceptionValidator.validateId(user.getId());
         emailSendingService.sendEmail(userRequestDTO.getEmail(), userRequestDTO);
-        log.info("New user " + user.getUsername()+ " was created and saved successfully.");
+        log.info("New user " + user.getUsername() + " was created and saved successfully.");
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) throws MandatoryFieldsMissingException {
-       authenticationRequestValidator.validateAuthenticationRequest(request);
+    public AuthenticationResponse authenticate(AuthenticationRequest request) throws MandatoryFieldsMissingException, NoUsersFoundException {
+        authenticationRequestValidator.validateAuthenticationRequest(request);
+        var user = userRepository.findByUserName(request.getUserName()).orElseThrow(() -> new NoUsersFoundException("Incorrect username or password."));
+        if(!passwordMatches(request.getPassword(), user.getPassword())){
+            throw new NoUsersFoundException("Incorrect username or password.");
+        }
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUserName(),
                         request.getPassword()
                 )
         );
-        var user = userRepository.findByUserName(request.getUserName()).orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
@@ -124,6 +128,11 @@ public class UserService {
             isUpdated = true;
         }
         return isUpdated;
+    }
+
+    public boolean passwordMatches(String plainTextPassword, String hashedPassword) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder.matches(plainTextPassword, hashedPassword);
     }
 
 }

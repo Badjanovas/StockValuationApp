@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/user")
 @Slf4j
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
     private final UserService userService;
@@ -25,7 +26,12 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> addUser(@RequestBody final UserRequestDTO userRequestDTO) throws MandatoryFieldsMissingException, UserAlreadyExistException, IncorrectEmailFormatException, EmailAlreadyExistException, NotValidIdException {
+    public ResponseEntity<?> addUser(@RequestBody final UserRequestDTO userRequestDTO)
+            throws MandatoryFieldsMissingException,
+            UserAlreadyExistException,
+            IncorrectEmailFormatException,
+            EmailAlreadyExistException,
+            NotValidIdException {
         return ResponseEntity.status(HttpStatus.OK).body(userService.register(userRequestDTO));
     }
 
@@ -35,17 +41,27 @@ public class UserController {
     }
 
     @PutMapping("/update/{userName}")
-    public ResponseEntity<?> updateUser(@PathVariable final String userName, @RequestBody final UserRequestDTO user) throws NoUsersFoundException, UserAlreadyExistException, EmailAlreadyExistException, IncorrectEmailFormatException, MandatoryFieldsMissingException {
+    public ResponseEntity<?> updateUser(@PathVariable final String userName, @RequestBody final UserRequestDTO user)
+            throws NoUsersFoundException,
+            UserAlreadyExistException,
+            EmailAlreadyExistException,
+            IncorrectEmailFormatException,
+            MandatoryFieldsMissingException {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserByUserName(userName, user));
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) throws MandatoryFieldsMissingException {
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) throws MandatoryFieldsMissingException, NoUsersFoundException {
         return ResponseEntity.ok(userService.authenticate(request));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody UserRequestDTO request) throws UserAlreadyExistException, IncorrectEmailFormatException, NotValidIdException, MandatoryFieldsMissingException, EmailAlreadyExistException {
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody UserRequestDTO request)
+            throws UserAlreadyExistException,
+            IncorrectEmailFormatException,
+            NotValidIdException,
+            MandatoryFieldsMissingException,
+            EmailAlreadyExistException {
         return ResponseEntity.ok(userService.register(request));
     }
 

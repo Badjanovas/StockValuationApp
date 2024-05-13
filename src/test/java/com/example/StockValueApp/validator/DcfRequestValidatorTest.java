@@ -50,9 +50,10 @@ class DcfRequestValidatorTest {
 
     @Test
     void validateDcfModelRequest_CompanyNameIsBlank_ThrowsException() {
+        var requestDTO = new DcfModelRequestDTO("", "ticker", 1.1, 1.1, 1.1, 1.1);
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
-                () -> validator.validateDcfModelRequest(new DcfModelRequestDTO("", "ticker", 1.1, 1.1, 1.1, 1.1))
+                () -> validator.validateDcfModelRequest(requestDTO)
         );
         assertEquals("Mandatory company name field is empty.", exception.getMessage());
     }
