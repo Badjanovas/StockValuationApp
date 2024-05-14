@@ -93,7 +93,7 @@ public class GrahamsModelService {
         return grahamsModelMappingService.mapToResponse(filteredValuationsByDate);
     }
 
-    public List<GrahamsResponseDTO> addGrahamsValuation(final GrahamsRequestDTO grahamsRequestDTO, final Long userId) throws MandatoryFieldsMissingException, NotValidIdException, NoUsersFoundException {
+    public GrahamsResponseDTO addGrahamsValuation(final GrahamsRequestDTO grahamsRequestDTO, final Long userId) throws MandatoryFieldsMissingException, NotValidIdException, NoUsersFoundException {
         globalExceptionValidator.validateId(userId);
         userRequestValidator.validateUserById(userId);
         grahamsModelRequestValidator.validateGrahamsModelRequest(grahamsRequestDTO);
@@ -106,7 +106,7 @@ public class GrahamsModelService {
         cacheService.evictAllGrahamsValuationsCaches();
         grahamsRepository.save(grahamsModel);
         log.info("Calculation created successfully.");
-        return grahamsModelMappingService.mapToResponse(grahamsRepository.findByUserId(userId));
+        return grahamsModelMappingService.mapToResponse(grahamsModel);
     }
 
     public void deleteGrahamsValuationById(final Long valuationId, final Long userId) throws NotValidIdException, NoGrahamsModelFoundException, ValuationDoestExistForSelectedUserException {

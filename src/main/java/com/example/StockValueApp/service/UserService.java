@@ -67,6 +67,7 @@ public class UserService {
     public AuthenticationResponse authenticate(AuthenticationRequest request) throws MandatoryFieldsMissingException, NoUsersFoundException {
         authenticationRequestValidator.validateAuthenticationRequest(request);
         var user = userRepository.findByUserName(request.getUserName()).orElseThrow(() -> new NoUsersFoundException("Incorrect username or password."));
+
         if(!passwordMatches(request.getPassword(), user.getPassword())){
             throw new NoUsersFoundException("Incorrect username or password.");
         }
@@ -79,6 +80,7 @@ public class UserService {
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .user(user)
                 .build();
     }
 

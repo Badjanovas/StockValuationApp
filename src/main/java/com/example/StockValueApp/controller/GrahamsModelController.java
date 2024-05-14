@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @RequestMapping("/api/grahams")
 @Slf4j
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class GrahamsModelController {
 
     private final GrahamsModelService grahamsModelService;

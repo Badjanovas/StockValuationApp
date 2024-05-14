@@ -24,7 +24,7 @@ public class GrahamsModelMappingService {
                 .build();
     }
 
-    public List<GrahamsResponseDTO> mapToResponse(List<GrahamsModel> grahamModelValuations) {
+    public List<GrahamsResponseDTO> mapToResponse(final List<GrahamsModel> grahamModelValuations) {
         List<GrahamsResponseDTO> mappedGrahamValuations = new ArrayList<>();
         for (GrahamsModel grahamsValuation : grahamModelValuations) {
             GrahamsResponseDTO dto = GrahamsResponseDTO.builder()
@@ -40,6 +40,19 @@ public class GrahamsModelMappingService {
             mappedGrahamValuations.add(dto);
         }
         return mappedGrahamValuations;
+    }
+
+    public GrahamsResponseDTO mapToResponse(final GrahamsModel grahamsValuation){
+        return GrahamsResponseDTO.builder()
+                .companyName(grahamsValuation.getName())
+                .companyTicker(grahamsValuation.getTicker())
+                .eps(grahamsValuation.getEps())
+                .growthRate(grahamsValuation.getGrowthRate())
+                .currentYieldOfBonds(grahamsValuation.getCurrentYieldOfBonds())
+                .intrinsicValue(grahamsValuation.getIntrinsicValue())
+                .creationDate(grahamsValuation.getCreationDate())
+                .build();
+
     }
 
     private Double calculateGrahamsValuation(final GrahamsRequestDTO requestDTO) {
