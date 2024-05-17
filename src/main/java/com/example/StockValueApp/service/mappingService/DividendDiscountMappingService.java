@@ -19,7 +19,7 @@ public class DividendDiscountMappingService {
     public DividendDiscountModel mapToEntity(final DividendDiscountRequestDTO requestDTO) {
         return DividendDiscountModel.builder()
                 .companyName(requestDTO.getCompanyName())
-                .ticker(requestDTO.getTicker())
+                .ticker(requestDTO.getCompanyTicker())
                 .currentYearsDiv(requestDTO.getCurrentYearsDiv())
                 .valueOfNextYearsDiv(calculateValueOfNextYearsDiv(requestDTO))
                 .wacc(requestDTO.getWacc())
@@ -32,8 +32,9 @@ public class DividendDiscountMappingService {
         final List<DividendDiscountResponseDTO> mappedDividendValuations = new ArrayList<>();
         for (DividendDiscountModel valuation : dividendDiscountValuations) {
             DividendDiscountResponseDTO dto = DividendDiscountResponseDTO.builder()
+                    .id(valuation.getId())
                     .companyName(valuation.getCompanyName())
-                    .ticker(valuation.getTicker())
+                    .companyTicker(valuation.getTicker())
                     .currentYearsDiv(valuation.getCurrentYearsDiv())
                     .valueOfNextYearsDiv(valuation.getValueOfNextYearsDiv())
                     .wacc(valuation.getWacc())
@@ -45,6 +46,20 @@ public class DividendDiscountMappingService {
             mappedDividendValuations.add(dto);
         }
         return mappedDividendValuations;
+    }
+
+    public DividendDiscountResponseDTO mapToResponse(final DividendDiscountModel dividendDiscountValuation){
+        return DividendDiscountResponseDTO.builder()
+                .id(dividendDiscountValuation.getId())
+                .companyName(dividendDiscountValuation.getCompanyName())
+                .companyTicker(dividendDiscountValuation.getTicker())
+                .currentYearsDiv(dividendDiscountValuation.getCurrentYearsDiv())
+                .valueOfNextYearsDiv(dividendDiscountValuation.getValueOfNextYearsDiv())
+                .wacc(dividendDiscountValuation.getWacc())
+                .expectedGrowthRate(dividendDiscountValuation.getExpectedGrowthRate())
+                .intrinsicValue(dividendDiscountValuation.getIntrinsicValue())
+                .creationDate(dividendDiscountValuation.getCreationDate())
+                .build();
     }
 
     private Double calculateDividendDiscountValue(DividendDiscountRequestDTO requestDTO) {

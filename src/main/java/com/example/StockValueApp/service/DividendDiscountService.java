@@ -75,7 +75,7 @@ public class DividendDiscountService {
         return dividendDiscountMappingService.mapToResponse(filteredCompaniesByCompanyName);
     }
 
-    @Cacheable(value = "dividendDiscountValuationsByDateCache", key = "#startDate.toString().concat('-').concat(#endDate.toString()).concat('-').concat(#userId.toString())")
+   @Cacheable(value = "dividendDiscountValuationsByDateCache", key = "#startDate.toString().concat('-').concat(#endDate.toString()).concat('-').concat(#userId.toString())")
     public List<DividendDiscountResponseDTO> getDividendDiscountValuationsByDate(final LocalDate startDate, final LocalDate endDate, final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, NoUsersFoundException {
         globalExceptionValidator.validateId(userId);
         userRequestValidator.validateUserById(userId);
@@ -92,7 +92,7 @@ public class DividendDiscountService {
         return dividendDiscountMappingService.mapToResponse(filteredCompaniesByDate);
     }
 
-    public List<DividendDiscountResponseDTO> addDividendDiscountValuation(final DividendDiscountRequestDTO dividendDiscountRequestDTO, final Long userId) throws MandatoryFieldsMissingException, NotValidIdException, NoUsersFoundException, IncorrectCompaniesExpectedGrowthException {
+    public DividendDiscountResponseDTO addDividendDiscountValuation(final DividendDiscountRequestDTO dividendDiscountRequestDTO, final Long userId) throws MandatoryFieldsMissingException, NotValidIdException, NoUsersFoundException, IncorrectCompaniesExpectedGrowthException {
         globalExceptionValidator.validateId(userId);
         userRequestValidator.validateUserById(userId);
         dividendDiscountRequestValidator.validateDividendDiscountRequest(dividendDiscountRequestDTO);
@@ -106,7 +106,7 @@ public class DividendDiscountService {
         cacheService.evictAllDividendDiscountValuationsCaches();
         dividendDiscountRepository.save(dividendDiscountModel);
         log.info("Calculation created successfully.");
-        return dividendDiscountMappingService.mapToResponse(dividendDiscountRepository.findByUserId(userId));
+        return dividendDiscountMappingService.mapToResponse(dividendDiscountModel);
     }
 
     public void deleteDividendDiscountValuationById(final Long valuationId, final Long userId) throws NotValidIdException, NoDividendDiscountModelFoundException, ValuationDoestExistForSelectedUserException {

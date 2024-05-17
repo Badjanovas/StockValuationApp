@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/grahams")
@@ -48,6 +50,8 @@ public class GrahamsModelController {
     @DeleteMapping("/{grahamsValuationId}/{userId}")
     public ResponseEntity<?> deleteGrahamsModel(@PathVariable final Long grahamsValuationId,@PathVariable final Long userId) throws NoGrahamsModelFoundException, NotValidIdException, ValuationDoestExistForSelectedUserException, NoUsersFoundException {
         grahamsModelService.deleteGrahamsValuationById(grahamsValuationId, userId);
-        return ResponseEntity.status(HttpStatus.OK).body("Grahams valuation  with id number " + grahamsValuationId + " was deleted from DB successfully.");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Grahams valuation  with id number " + grahamsValuationId + " was deleted from DB successfully.");
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

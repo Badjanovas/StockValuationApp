@@ -14,8 +14,9 @@ import java.time.LocalDate;
 @Builder
 public class DividendDiscountResponseDTO implements Serializable {
 
+    private Long id;
     private String companyName;
-    private String ticker;
+    private String companyTicker;
     private Double currentYearsDiv;
     private Double valueOfNextYearsDiv;
     private Double wacc;

@@ -10,7 +10,7 @@ import lombok.Data;
 public class DividendDiscountRequestDTO  {
 
     private String companyName;
-    private String ticker;
+    private String companyTicker;
     private Double currentYearsDiv;
     // turi buti procentais
     private Double wacc;

@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @Builder
 public class GrahamsResponseDTO implements Serializable {
 
+    private Long id;
     private String companyName;
     private String companyTicker;
     //Earnings per share

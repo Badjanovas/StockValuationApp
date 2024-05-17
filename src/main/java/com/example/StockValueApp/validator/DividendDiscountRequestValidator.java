@@ -29,10 +29,10 @@ public class DividendDiscountRequestValidator {
         } else if (dividendDiscountRequestDTO.getCompanyName().isEmpty()) {
             log.error("Mandatory company name field is empty.");
             throw new MandatoryFieldsMissingException("Mandatory company name field is empty.");
-        } else if (dividendDiscountRequestDTO.getTicker() == null ) {
+        } else if (dividendDiscountRequestDTO.getCompanyTicker() == null ) {
             log.error("Mandatory company ticker field is missing.");
             throw new MandatoryFieldsMissingException("Mandatory company ticker field is missing.");
-        } else if (dividendDiscountRequestDTO.getTicker().isBlank()) {
+        } else if (dividendDiscountRequestDTO.getCompanyTicker().isBlank()) {
             log.error("Mandatory company ticker field is empty.");
             throw new MandatoryFieldsMissingException("Mandatory company ticker field is empty.");
         } else if (dividendDiscountRequestDTO.getCurrentYearsDiv() == null) {

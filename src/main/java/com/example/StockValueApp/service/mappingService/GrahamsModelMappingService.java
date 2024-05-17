@@ -28,6 +28,7 @@ public class GrahamsModelMappingService {
         List<GrahamsResponseDTO> mappedGrahamValuations = new ArrayList<>();
         for (GrahamsModel grahamsValuation : grahamModelValuations) {
             GrahamsResponseDTO dto = GrahamsResponseDTO.builder()
+                    .id(grahamsValuation.getId())
                     .companyName(grahamsValuation.getName())
                     .companyTicker(grahamsValuation.getTicker())
                     .eps(grahamsValuation.getEps())
@@ -44,6 +45,7 @@ public class GrahamsModelMappingService {
 
     public GrahamsResponseDTO mapToResponse(final GrahamsModel grahamsValuation){
         return GrahamsResponseDTO.builder()
+                .id(grahamsValuation.getId())
                 .companyName(grahamsValuation.getName())
                 .companyTicker(grahamsValuation.getTicker())
                 .eps(grahamsValuation.getEps())
@@ -52,7 +54,6 @@ public class GrahamsModelMappingService {
                 .intrinsicValue(grahamsValuation.getIntrinsicValue())
                 .creationDate(grahamsValuation.getCreationDate())
                 .build();
-
     }
 
     private Double calculateGrahamsValuation(final GrahamsRequestDTO requestDTO) {

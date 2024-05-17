@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @RequestMapping("/api/dividendDiscount")
 @Slf4j
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class DividendDiscountController {
 
     private final DividendDiscountService dividendDiscountService;
@@ -35,7 +36,7 @@ public class DividendDiscountController {
     }
 
     @GetMapping("/date/{startDate}/{endDate}/{userId}")
-    public ResponseEntity<?> findByDate(@PathVariable("startDate") final LocalDate startDate, @PathVariable final LocalDate endDate , final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, NoUsersFoundException {
+    public ResponseEntity<?> findByDate(@PathVariable("startDate") final LocalDate startDate, @PathVariable final LocalDate endDate, @PathVariable final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, NoUsersFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(dividendDiscountService.getDividendDiscountValuationsByDate(startDate, endDate, userId));
     }
 
