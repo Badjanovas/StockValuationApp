@@ -90,7 +90,7 @@ public class DcfModelService {
         return dcfModelMappingService.mapToResponse(filteredValuationsByDate);
     }
 
-    public List<DcfModelResponseDTO> addDcfValuation(final DcfModelRequestDTO dcfModelRequestDTO, final Long userId) throws MandatoryFieldsMissingException, NotValidIdException, NoUsersFoundException {
+    public DcfModelResponseDTO addDcfValuation(final DcfModelRequestDTO dcfModelRequestDTO, final Long userId) throws MandatoryFieldsMissingException, NotValidIdException, NoUsersFoundException {
         globalExceptionValidator.validateId(userId);
         userRequestValidator.validateUserById(userId);
         dcfRequestValidator.validateDcfModelRequest(dcfModelRequestDTO);
@@ -103,7 +103,7 @@ public class DcfModelService {
         cacheService.evictAllDcfValuationsCaches();
         dcfModelRepository.save(dcfModel);
         log.info("Calculation created successfully.");
-        return dcfModelMappingService.mapToResponse(dcfModelRepository.findAll());
+        return dcfModelMappingService.mapToResponse(dcfModel);
     }
     public void deleteDcfValuationById(final Long valuationId, final Long userId) throws NotValidIdException, NoDcfValuationsFoundException, ValuationDoestExistForSelectedUserException {
         globalExceptionValidator.validateId(valuationId);

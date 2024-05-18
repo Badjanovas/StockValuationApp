@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/dividendDiscount")
@@ -48,7 +50,9 @@ public class DividendDiscountController {
     @DeleteMapping("/{valuationId}/{userId}")
     public ResponseEntity<?> deleteDividendDiscountById(@PathVariable final  Long valuationId, @PathVariable final Long userId) throws NoDividendDiscountModelFoundException, NotValidIdException, ValuationDoestExistForSelectedUserException {
         dividendDiscountService.deleteDividendDiscountValuationById(valuationId, userId);
-        return ResponseEntity.status(HttpStatus.OK).body("Dividend discount valuation with id number " + valuationId + " was deleted from DB successfully.");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Dividend discount valuation  with id number " + valuationId + " was deleted from DB successfully.");
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }

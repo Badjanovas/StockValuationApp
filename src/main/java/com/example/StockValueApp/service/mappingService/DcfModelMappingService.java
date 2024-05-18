@@ -14,15 +14,21 @@ import java.util.List;
 public class DcfModelMappingService {
 
     public DcfModel mapToEntity(final DcfModelRequestDTO requestDTO) {
+        double wacc = convertToPercentages(requestDTO.getWacc());
+        double growthRate = convertToPercentages(requestDTO.getGrowthRate());
+
+        double sumOfDiscountedFCF = calculateSumOfDiscountedFCF(requestDTO.getSumOfFCF(), wacc, growthRate);
+        double equityValue = sumOfDiscountedFCF + requestDTO.getCashAndCashEquivalents() - requestDTO.getTotalDebt();
+
         return DcfModel.builder()
                 .companyName(requestDTO.getCompanyName())
-                .ticker(requestDTO.getTicker())
+                .ticker(requestDTO.getCompanyTicker())
                 .sumOfFCF(requestDTO.getSumOfFCF())
                 .cashAndCashEquivalents(requestDTO.getCashAndCashEquivalents())
                 .totalDebt(requestDTO.getTotalDebt())
-                .equityValue(calculateEquityValue(requestDTO))
+                .equityValue(roundToTwoDecimal(equityValue))
                 .sharesOutstanding(requestDTO.getSharesOutstanding())
-                .intrinsicValue(calculateDcfValuation(requestDTO))
+                .intrinsicValue(calculateDcfValuation(equityValue, requestDTO.getSharesOutstanding()))
                 .build();
     }
 
@@ -30,8 +36,9 @@ public class DcfModelMappingService {
         final List<DcfModelResponseDTO> mappedDcfValuations = new ArrayList<>();
         for (DcfModel dcfValuation : dcfValuations) {
             DcfModelResponseDTO dto = DcfModelResponseDTO.builder()
+                    .id(dcfValuation.getId())
                     .companyName(dcfValuation.getCompanyName())
-                    .ticker(dcfValuation.getTicker())
+                    .companyTicker(dcfValuation.getTicker())
                     .sumOfFCF(dcfValuation.getSumOfFCF())
                     .cashAndCashEquivalents(dcfValuation.getCashAndCashEquivalents())
                     .totalDebt(dcfValuation.getTotalDebt())
@@ -46,13 +53,52 @@ public class DcfModelMappingService {
         return mappedDcfValuations;
     }
 
-    // iskelti  i servisa
-    private Double calculateEquityValue(final DcfModelRequestDTO requestDTO) {
-        return requestDTO.getSumOfFCF() + requestDTO.getCashAndCashEquivalents() - requestDTO.getTotalDebt();
+    public DcfModelResponseDTO mapToResponse(final DcfModel dcfValuation){
+        return DcfModelResponseDTO.builder()
+                .id(dcfValuation.getId())
+                .companyName(dcfValuation.getCompanyName())
+                .companyTicker(dcfValuation.getTicker())
+                .sumOfFCF(dcfValuation.getSumOfFCF())
+                .cashAndCashEquivalents(dcfValuation.getCashAndCashEquivalents())
+                .totalDebt(dcfValuation.getTotalDebt())
+                .equityValue(dcfValuation.getEquityValue())
+                .sharesOutstanding(dcfValuation.getSharesOutstanding())
+                .intrinsicValue(dcfValuation.getIntrinsicValue())
+                .creationDate(dcfValuation.getCreationDate())
+                .build();
     }
 
-    private Double calculateDcfValuation(final DcfModelRequestDTO requestDTO) {
-        return roundToTwoDecimal(calculateEquityValue(requestDTO) / requestDTO.getSharesOutstanding());
+    private Double calculateSumOfDiscountedFCF(Double sumOfFCF, Double wacc, Double growthRate) {
+        // Assume initial FCF is the average of sumOfFCF divided by 5 for simplicity
+        double initialFCF = sumOfFCF / 5;
+        System.out.println("Initial FCF: " + initialFCF);
+        double sumOfDiscountedFCF = 0.0;
+
+        // Calculate FCF for each of the next 5 years and discount them to present value
+        for (int i = 1; i <= 5; i++) {
+            double fcf = initialFCF * Math.pow(1 + growthRate, i);
+            double discountedFCF = fcf / Math.pow(1 + wacc, i);
+            sumOfDiscountedFCF += discountedFCF;
+            System.out.println("Year " + i + " FCF: " + fcf + " Discounted FCF: " + discountedFCF);
+        }
+
+        // Calculate Terminal Value
+        double terminalValue = initialFCF * Math.pow(1 + growthRate, 5) * (1 + growthRate) / (wacc - growthRate);
+        double discountedTerminalValue = terminalValue / Math.pow(1 + wacc, 5);
+        System.out.println("Terminal Value: " + terminalValue + " Discounted Terminal Value: " + discountedTerminalValue);
+
+        // Total Enterprise Value
+        double totalEnterpriseValue = sumOfDiscountedFCF + discountedTerminalValue;
+
+        return totalEnterpriseValue;
+    }
+
+    private Double convertToPercentages(Double number) {
+        return number / 100;
+    }
+
+    private Double calculateDcfValuation(Double equityValue, Double sharesOutstanding) {
+        return roundToTwoDecimal(equityValue / sharesOutstanding);
     }
 
     private Double roundToTwoDecimal(final Double numberToRound) {

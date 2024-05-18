@@ -10,11 +10,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/discountedCashFlow")
 @Slf4j
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class DcfModelController {
 
     private final DcfModelService dcfModelService;
@@ -47,6 +50,8 @@ public class DcfModelController {
     @DeleteMapping("/{dcfValuationId}/{userId}")
     public ResponseEntity<?> deleteDcfValuationById(@PathVariable final Long dcfValuationId, @PathVariable final Long userId) throws NotValidIdException, NoDcfValuationsFoundException, ValuationDoestExistForSelectedUserException {
         dcfModelService.deleteDcfValuationById(dcfValuationId, userId);
-        return ResponseEntity.status(HttpStatus.OK).body("Discounted cash flow valuation with id number " + dcfValuationId + " was deleted from DB successfully.");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Discounted cash flow valuation with id number " + dcfValuationId + " was deleted from DB successfully.");
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

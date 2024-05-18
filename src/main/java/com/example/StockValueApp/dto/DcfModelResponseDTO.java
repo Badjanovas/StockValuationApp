@@ -14,8 +14,9 @@ import java.time.LocalDate;
 @Builder
 public class DcfModelResponseDTO implements Serializable {
 
+    private Long id;
     private String companyName;
-    private String ticker;
+    private String companyTicker;
     private Double sumOfFCF;
     private Double cashAndCashEquivalents;
     private Double totalDebt;
