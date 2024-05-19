@@ -17,7 +17,7 @@ import java.util.Map;
 @RequestMapping("/api/dividendDiscount")
 @Slf4j
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "https://stock-value-app.s3.eu-west-2.amazonaws.com/", "https://master.d4gdjif54crop.amplifyapp.com"})
 public class DividendDiscountController {
 
     private final DividendDiscountService dividendDiscountService;
