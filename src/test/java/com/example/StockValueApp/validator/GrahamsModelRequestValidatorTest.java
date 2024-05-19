@@ -31,7 +31,7 @@ class GrahamsModelRequestValidatorTest {
 
     /* Tests for validateGrahamsModelRequest */
     @Test
-    void validateGrahamsRequest_nullRequest_ThrowsException(){
+    void validateGrahamsRequest_nullRequest_ThrowsException() {
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
                 () -> validator.validateGrahamsModelRequest(null)
@@ -40,79 +40,128 @@ class GrahamsModelRequestValidatorTest {
     }
 
     @Test
-    void validateGrahamsRequest_CompanyNameNull_ThrowsException(){
+    void validateGrahamsRequest_CompanyNameNull_ThrowsException() {
+        var requestDTO = new GrahamsRequestDTO(
+                null,
+                "ticker",
+                1.1,
+                1.1,
+                1.1
+        );
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
                 () -> validator.validateGrahamsModelRequest
-                        (new GrahamsRequestDTO(null, "ticker", 1.1, 1.1,1.1 ))
+                        (requestDTO)
         );
         assertEquals("Mandatory company name field is missing.", exception.getMessage());
     }
 
     @Test
-    void validateGrahamsRequest_CompanyNameIsBlank_ThrowsException(){
+    void validateGrahamsRequest_CompanyNameIsBlank_ThrowsException() {
+        var requestDTO = new GrahamsRequestDTO(
+                "",
+                "ticker",
+                1.1,
+                1.1,
+                1.1
+        );
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
                 () -> validator.validateGrahamsModelRequest
-                        (new GrahamsRequestDTO("", "ticker", 1.1, 1.1,1.1 ))
+                        (requestDTO)
         );
         assertEquals("Mandatory company name field is empty.", exception.getMessage());
     }
 
     @Test
-    void validateGrahamsRequest_CompanyTickerIsNull_ThrowsException(){
+    void validateGrahamsRequest_CompanyTickerIsNull_ThrowsException() {
+        var requestDTO = new GrahamsRequestDTO(
+                "company",
+                null,
+                1.1,
+                1.1,
+                1.1
+        );
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
                 () -> validator.validateGrahamsModelRequest
-                        (new GrahamsRequestDTO("company", null, 1.1, 1.1,1.1 ))
+                        (requestDTO)
         );
         assertEquals("Mandatory company ticker field is missing.", exception.getMessage());
     }
 
     @Test
-    void validateGrahamsRequest_CompanyTickerIsBlank_ThrowsException(){
+    void validateGrahamsRequest_CompanyTickerIsBlank_ThrowsException() {
+        var requestDTO = new GrahamsRequestDTO(
+                "company",
+                "",
+                1.1,
+                1.1,
+                1.1
+        );
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
                 () -> validator.validateGrahamsModelRequest
-                        (new GrahamsRequestDTO("company", "", 1.1, 1.1,1.1 ))
+                        (requestDTO)
         );
         assertEquals("Mandatory company ticker field is empty.", exception.getMessage());
     }
 
     @Test
     void validateGrahamsRequest_EpsIsNull_ThrowsException() {
+        var requestDTO = new GrahamsRequestDTO(
+                "company",
+                "ticker",
+                null,
+                1.1,
+                1.1
+        );
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
                 () -> validator.validateGrahamsModelRequest
-                        (new GrahamsRequestDTO("company", "ticker", null, 1.1,1.1 ))
+                        (requestDTO)
         );
         assertEquals("Mandatory eps field is empty.", exception.getMessage());
     }
 
     @Test
-    void validateGrahamsRequest_GrowthRateIsNull_ThrowsException(){
+    void validateGrahamsRequest_GrowthRateIsNull_ThrowsException() {
+        var requestDTO = new GrahamsRequestDTO(
+                "company",
+                "ticker",
+                1.1,
+                null,
+                1.1
+        );
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
                 () -> validator.validateGrahamsModelRequest
-                        (new GrahamsRequestDTO("company", "ticker", 1.1, null,1.1 ))
+                        (requestDTO)
         );
         assertEquals("Mandatory growth rate field is empty.", exception.getMessage());
     }
 
     @Test
-    void validateGrahamsRequest_CurrentYieldOfBondsIsNull_ThrowsException(){
+    void validateGrahamsRequest_CurrentYieldOfBondsIsNull_ThrowsException() {
+        var requestDTO = new GrahamsRequestDTO(
+                "company",
+                "ticker",
+                1.1,
+                1.1,
+                null
+        );
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
                 () -> validator.validateGrahamsModelRequest
-                        (new GrahamsRequestDTO("company", "ticker", 1.1, 1.1,null ))
+                        (requestDTO)
         );
         assertEquals("Mandatory current yield of bonds field is empty.", exception.getMessage());
     }
 
     /* Tests for validateGrahamsModelById */
     @Test
-    void validateGrahamsModelById_GrahamsValuationNotFound_ThrowsException(){
-        Long valuationId = 1L;
+    void validateGrahamsModelById_GrahamsValuationNotFound_ThrowsException() {
+        final Long valuationId = 1L;
         when(grahamsModelRepository.existsById(valuationId)).thenReturn(false);
 
         NoGrahamsModelFoundException exception = assertThrows(
@@ -123,8 +172,8 @@ class GrahamsModelRequestValidatorTest {
     }
 
     @Test
-    void validateGrahamsModelById_GrahamsValuationExist_doesNotThrowException(){
-        Long valuationId = 1L;
+    void validateGrahamsModelById_GrahamsValuationExist_doesNotThrowException() {
+        final Long valuationId = 1L;
         when(grahamsModelRepository.existsById(valuationId)).thenReturn(true);
 
         assertDoesNotThrow(() -> validator.validateGrahamsModelById(valuationId));
@@ -132,8 +181,8 @@ class GrahamsModelRequestValidatorTest {
 
     /* Tests for validateGrahamsModelList */
     @Test
-    void validateGrahamsModelList_EmptyList_ThrowsException(){
-        List<GrahamsModel> grahamsValuations = new ArrayList<>();
+    void validateGrahamsModelList_EmptyList_ThrowsException() {
+        final List<GrahamsModel> grahamsValuations = new ArrayList<>();
         NoGrahamsModelFoundException exception = assertThrows(
                 NoGrahamsModelFoundException.class,
                 () -> validator.validateGrahamsModelList(grahamsValuations)
@@ -143,11 +192,11 @@ class GrahamsModelRequestValidatorTest {
     }
 
     @Test
-    void validateGrahamsModelList_PopulatedList_DoesNotThrowException(){
-        List<GrahamsModel> grahamsValuations = new ArrayList<>();
-        grahamsValuations.add(new GrahamsModel("Apple", "AAPL", 11.1, 1.1,1.1,null));
-        grahamsValuations.add(new GrahamsModel("Alphabet", "GOOGL", 11.1, 1.1,1.1,null));
-        grahamsValuations.add(new GrahamsModel("Apple", "AAPL", 10.1, 2.1,3.1,null));
+    void validateGrahamsModelList_PopulatedList_DoesNotThrowException() {
+        final List<GrahamsModel> grahamsValuations = new ArrayList<>();
+        grahamsValuations.add(new GrahamsModel("Apple", "AAPL", 11.1, 1.1, 1.1, null));
+        grahamsValuations.add(new GrahamsModel("Alphabet", "GOOGL", 11.1, 1.1, 1.1, null));
+        grahamsValuations.add(new GrahamsModel("Apple", "AAPL", 10.1, 2.1, 3.1, null));
 
         assertDoesNotThrow(() -> validator.validateGrahamsModelList(grahamsValuations));
     }
@@ -155,38 +204,74 @@ class GrahamsModelRequestValidatorTest {
     /* Tests for validateGrahamsModelForUser*/
     @Test
     void validateGrahamsModelForUser_ExistsAndBelongsToUser_NoExceptionThrown() {
-        Long valuationId = 1L;
-        Long userId = 1L;
-        User user = new User(1L, "Andrius", "password", "myEmail@gmail.com", null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        when(grahamsModelRepository.findById(valuationId)).thenReturn(Optional.of(new GrahamsModel("Apple", "AAPL", 10.1, 2.1,3.1,user)));
+        final Long valuationId = 1L;
+        final Long userId = 1L;
+        var user = new User(
+                1L,
+                "Andrius",
+                "password",
+                "myEmail@gmail.com",
+                null,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+        );
+
+        var grahamsModel = new GrahamsModel(
+                "Apple",
+                "AAPL",
+                10.1,
+                2.1,
+                3.1,
+                user
+        );
+        when(grahamsModelRepository.findById(valuationId)).thenReturn(Optional.of(grahamsModel));
 
         assertDoesNotThrow(() -> validator.validateGrahamsModelForUser(valuationId, userId));
     }
 
     @Test
-    void validateGrahamsModelForUser_ValuationDoesNotExist_ThrowsException(){
-        Long valuationId = 1L;
-        Long userId = 1L;
+    void validateGrahamsModelForUser_ValuationDoesNotExist_ThrowsException() {
+        final Long valuationId = 1L;
+        final Long userId = 1L;
 
         when(grahamsModelRepository.findById(valuationId))
                 .thenReturn(Optional.empty());
 
         ValuationDoestExistForSelectedUserException exception = assertThrows(
                 ValuationDoestExistForSelectedUserException.class,
-                () -> validator.validateGrahamsModelForUser(valuationId,userId)
+                () -> validator.validateGrahamsModelForUser(valuationId, userId)
         );
 
         assertEquals("Valuation does not exist for this user", exception.getMessage());
     }
 
     @Test
-    void validateGrahamsModelForUser_ValuationExistsButBelongsToAnotherUser_ThrowsException(){
-        Long valuationId = 1L;
-        Long userId = 2L;
-        User user = new User(1L, "Andrius", "password", "myEmail@gmail.com", null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    void validateGrahamsModelForUser_ValuationExistsButBelongsToAnotherUser_ThrowsException() {
+        final Long valuationId = 1L;
+        final Long userId = 2L;
+        var user = new User(
+                1L,
+                "Andrius",
+                "password",
+                "myEmail@gmail.com",
+                null,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+        );
+
+        var grahamsModel = new GrahamsModel(
+                "Apple",
+                "AAPL",
+                10.1,
+                2.1,
+                3.1,
+                user
+        );
 
         when(grahamsModelRepository.findById(valuationId))
-                .thenReturn(Optional.of(new GrahamsModel("Apple", "AAPL", 10.1, 2.1,3.1,user)));
+                .thenReturn(Optional.of(grahamsModel));
 
         ValuationDoestExistForSelectedUserException exception = assertThrows(
                 ValuationDoestExistForSelectedUserException.class,

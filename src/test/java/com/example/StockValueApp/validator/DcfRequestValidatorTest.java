@@ -41,16 +41,37 @@ class DcfRequestValidatorTest {
 
     @Test
     void validateDcfModelRequest_CompanyNameNull_ThrowsException() {
+        var requestDTO = new DcfModelRequestDTO(
+                null,
+                "ticker",
+                1.1,
+                1.1,
+                1.1,
+                1.1,
+                1.1,
+                1.1
+        );
+
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
-                () -> validator.validateDcfModelRequest(new DcfModelRequestDTO(null, "ticker", 1.1, 1.1, 1.1, 1.1))
+                () -> validator.validateDcfModelRequest(requestDTO)
         );
         assertEquals("Mandatory company name field is missing.", exception.getMessage());
     }
 
     @Test
     void validateDcfModelRequest_CompanyNameIsBlank_ThrowsException() {
-        var requestDTO = new DcfModelRequestDTO("", "ticker", 1.1, 1.1, 1.1, 1.1);
+        var requestDTO = new DcfModelRequestDTO(
+                "",
+                "ticker",
+                1.1,
+                1.1,
+                1.1,
+                1.1,
+                1.1,
+                1.1
+        );
+
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
                 () -> validator.validateDcfModelRequest(requestDTO)
@@ -60,54 +81,120 @@ class DcfRequestValidatorTest {
 
     @Test
     void validateDcfModelRequest_CompanyTickerIsNull_ThrowsException() {
+        var requestDTO = new DcfModelRequestDTO(
+                "company",
+                null,
+                1.1,
+                1.1,
+                1.1,
+                1.1,
+                1.1,
+                1.1
+        );
+
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
-                () -> validator.validateDcfModelRequest(new DcfModelRequestDTO("company", null, 1.1, 1.1, 1.1, 1.1))
+                () -> validator.validateDcfModelRequest(requestDTO)
         );
         assertEquals("Mandatory company ticker field is missing.", exception.getMessage());
     }
 
     @Test
     void validateDcfModelRequest_CompanyTickerIsBlank_ThrowsException() {
+        var requestDTO = new DcfModelRequestDTO(
+                "company",
+                "",
+                1.1,
+                1.1,
+                1.1,
+                1.1,
+                1.1,
+                1.1
+        );
+
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
-                () -> validator.validateDcfModelRequest(new DcfModelRequestDTO("company", "", 1.1, 1.1, 1.1, 1.1))
+                () -> validator.validateDcfModelRequest(requestDTO)
         );
         assertEquals("Mandatory company ticker field is empty.", exception.getMessage());
     }
 
     @Test
     void validateDcfModelRequest_SumOfFCFIsNull_ThrowsException() {
+        var requestDto = new DcfModelRequestDTO(
+                "company",
+                "ticker",
+                null,
+                1.1,
+                1.1,
+                1.1,
+                1.1,
+                1.1
+        );
+
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
-                () -> validator.validateDcfModelRequest(new DcfModelRequestDTO("company", "ticker", null, 1.1, 1.1, 1.1))
+                () -> validator.validateDcfModelRequest(requestDto)
         );
         assertEquals("Mandatory sumOfFCF field is missing.", exception.getMessage());
     }
 
     @Test
     void validateDcfModelRequest_CashAndCashEquivalentsIsNull_ThrowsException() {
+        var requestDTO = new DcfModelRequestDTO(
+                "company",
+                "ticker",
+                1.1,
+                null,
+                1.1,
+                1.1,
+                1.1,
+                1.1
+        );
+
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
-                () -> validator.validateDcfModelRequest(new DcfModelRequestDTO("company", "ticker", 1.1, null, 1.1, 1.1))
+                () -> validator.validateDcfModelRequest(requestDTO)
         );
         assertEquals("Mandatory cashAndCashEquivalents field is missing.", exception.getMessage());
     }
 
     @Test
     void validateDcfModelRequest_TotalDebtIsNull_ThrowsException() {
+        var requestDTO = new DcfModelRequestDTO(
+                "company",
+                "ticker",
+                1.1,
+                1.1,
+                null,
+                1.1,
+                1.1,
+                1.1
+        );
+
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
-                () -> validator.validateDcfModelRequest(new DcfModelRequestDTO("company", "ticker", 1.1, 1.1, null, 1.1))
+                () -> validator.validateDcfModelRequest(requestDTO)
         );
         assertEquals("Mandatory totalDebt field is missing.", exception.getMessage());
     }
 
     @Test
     void validateDcfModelRequest_SharesOutstandingIsNull_ThrowsException() {
+        var requestDTO = new DcfModelRequestDTO(
+                "company",
+                "ticker",
+                1.1,
+                1.1,
+                1.1,
+                null,
+                1.1,
+                1.1
+        );
+
         MandatoryFieldsMissingException exception = assertThrows(
                 MandatoryFieldsMissingException.class,
-                () -> validator.validateDcfModelRequest(new DcfModelRequestDTO("company", "ticker", 1.1, 1.1, 1.1, null))
+                () -> validator.validateDcfModelRequest(requestDTO)
         );
         assertEquals("Mandatory sharesOutstanding field is missing.", exception.getMessage());
     }
@@ -150,50 +237,90 @@ class DcfRequestValidatorTest {
     }
 
     @Test
-    void validateDcfModelById_DoesExist_DoesNotThrowException(){
-      when(dcfModelRepository.existsById(1L)).thenReturn(true);
+    void validateDcfModelById_DoesExist_DoesNotThrowException() {
+        when(dcfModelRepository.existsById(1L)).thenReturn(true);
 
-      assertDoesNotThrow(() -> validator.validateDcfModelById(1L));
+        assertDoesNotThrow(() -> validator.validateDcfModelById(1L));
     }
 
     /* Tests for validateDcfModelForUser */
     @Test
     void validateDcfModelForUser() {
     }
+
     @Test
     void validateDcfModelForUser_ExistsAndBelongsToUser_NoExceptionThrown() {
-        Long valuationId = 1L;
-        Long userId = 1L;
-        User user = new User(1L, "Andrius", "password", "myEmail@gmail.com", null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        when(dcfModelRepository.findById(valuationId)).thenReturn(Optional.of(new DcfModel("Apple", "AAPL", 10.1, 2.1,3.1,1.1, user)));
+        final Long valuationId = 1L;
+        final Long userId = 1L;
+        var user = new User(
+                1L,
+                "Andrius",
+                "password",
+                "myEmail@gmail.com",
+                null,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+        );
+
+        var dcfModel = new DcfModel(
+                "Apple",
+                "AAPL",
+                10.1,
+                2.1,
+                3.1,
+                1.1,
+                user
+        );
+
+        when(dcfModelRepository.findById(valuationId)).thenReturn(Optional.of(dcfModel));
 
         assertDoesNotThrow(() -> validator.validateDcfModelForUser(valuationId, userId));
     }
 
     @Test
-    void validateDcfModelForUser_ValuationDoesNotExist_ThrowsException(){
-        Long valuationId = 1L;
-        Long userId = 1L;
+    void validateDcfModelForUser_ValuationDoesNotExist_ThrowsException() {
+        final Long valuationId = 1L;
+        final Long userId = 1L;
 
         when(dcfModelRepository.findById(valuationId))
                 .thenReturn(Optional.empty());
 
         ValuationDoestExistForSelectedUserException exception = assertThrows(
                 ValuationDoestExistForSelectedUserException.class,
-                () -> validator.validateDcfModelForUser(valuationId,userId)
+                () -> validator.validateDcfModelForUser(valuationId, userId)
         );
 
         assertEquals("Valuation does not exist for this user", exception.getMessage());
     }
 
     @Test
-    void validateDcfModelForUser_ValuationExistsButBelongsToAnotherUser_ThrowsException(){
-        Long valuationId = 1L;
-        Long userId = 2L;
-        User user = new User(1L, "Andrius", "password", "myEmail@gmail.com", null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    void validateDcfModelForUser_ValuationExistsButBelongsToAnotherUser_ThrowsException() {
+        final Long valuationId = 1L;
+        final Long userId = 2L;
+        var user = new User(
+                1L,
+                "Andrius",
+                "password",
+                "myEmail@gmail.com",
+                null,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>()
+        );
+
+        var dcfModel = new DcfModel(
+                "Apple",
+                "AAPL",
+                10.1,
+                2.1,
+                3.1,
+                1.1,
+                user
+        );
 
         when(dcfModelRepository.findById(valuationId))
-                .thenReturn(Optional.of(new DcfModel("Apple", "AAPL", 10.1, 2.1,3.1,1.1, user)));
+                .thenReturn(Optional.of(dcfModel));
 
         ValuationDoestExistForSelectedUserException exception = assertThrows(
                 ValuationDoestExistForSelectedUserException.class,
