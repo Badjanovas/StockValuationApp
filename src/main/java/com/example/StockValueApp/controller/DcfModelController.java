@@ -19,7 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @CrossOrigin(origins = {"http://localhost:4200",
         "https://stock-value-app.s3.eu-west-2.amazonaws.com/",
-        "https://master.d4gdjif54crop.amplifyapp.com"
+        "https://main.d3gj5nyzm6hb6g.amplifyapp.com/"
 })
 public class DcfModelController {
 
